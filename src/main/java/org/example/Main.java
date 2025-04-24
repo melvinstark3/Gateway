@@ -299,7 +299,8 @@ public class Main {
     }
 
     public static void checkHttps() throws InterruptedException {
-        Thread.sleep(10000);
+        wait = new WebDriverWait(driver, 30);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("submit-button")));
         String paymentURL = driver.getCurrentUrl();
         System.out.println("Redirected Payment URL is "+paymentURL);
         //Check for http in the URL. If not, reload the URL in http and recheck if the URL reloaded in https automatically or not
@@ -349,7 +350,6 @@ public class Main {
         driver.findElement(By.xpath("//textarea[@placeholder='Note here...']")).sendKeys("Test Order Comment");
         wait = new WebDriverWait(driver, 30);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
-        Thread.sleep(10000);
         //Select Payment method (paymentMode0 = 1st - COD , paymentMode1 = 2nd - Online)
         driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
         driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
@@ -373,7 +373,15 @@ public class Main {
 
         driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
         driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
+
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("back-button")));
+        //Cancel Payment using back button
+        driver.findElement(By.id("back-button")).click();
+
+        Thread.sleep(10000);
+        System.out.println("Cancellation of Payment takes User to the URL: "+driver.getCurrentUrl());
         //checkSavedOrNew();
+
         restartLoginOrder();
         Thread.sleep(5000);
         String orderIWithHash = driver.findElement(By.xpath("//span[@class='pl-1']")).getText();
