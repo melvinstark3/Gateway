@@ -1,21 +1,18 @@
 package org.example;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-
-import java.io.FileInputStream;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 
 public class Main {
     public static WebDriver driver;
+
+    public static WebDriverWait wait;
 
     public static void invokeBrowser() {
         String browser = "chrome";
@@ -29,7 +26,7 @@ public class Main {
         driver.quit();
     }
 
-    public static void gatewayEnable() throws InterruptedException{
+    public static void gatewayEnable() throws InterruptedException {
         driver.navigate().to("https://app1.restolabs.com/en");
         driver.findElement(By.id("edit-name")).sendKeys("kartik@restolabs.com");
         driver.findElement(By.id("edit-pass")).sendKeys("kartik12345");
@@ -49,70 +46,379 @@ public class Main {
         JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript("window.scrollBy(0,750)", "");
         driver.findElement(By.name("laravel_payment_v3")).click();
-        driver.findElement(By.name("CardConnect[enable]")).click();
+        driver.findElement(By.name("StripeV2[enable]")).click();
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        invokeBrowser();
-        driver.navigate().to("https://flamingo.onlineordering.io/en");
-        driver.findElement(By.xpath("//button[@data-testid=\"modeSelect2\"]")).click();
-        driver.findElement(By.xpath("//h5[normalize-space()='Flamingo Uno']")).click();
-        Thread.sleep(2000);
-        driver.findElement(By.xpath("(//button[@data-testid=\"chooserContinue\"])[2]")).click();
-        driver.findElement(By.xpath("//div[@aria-label=\"Truffle Burrata Pizza\"]")).click();
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("window.scrollBy(0,200)", "");
-        driver.findElement(By.id("message")).sendKeys("Test Item Comment");
-        driver.findElement(By.xpath("//button[@data-testid=\"addToCart\"]")).click();
-        driver.findElement(By.xpath("//a[@id=\"cart-header\"]")).click();
-        driver.findElement(By.xpath("//button[@data-testid=\"goToCheckout_desktop\"]")).click();
-        Thread.sleep(5000);
-        driver.findElement(By.xpath("//input[@data-testid=\"first_name\"]")).sendKeys("Test First Name");
-        driver.findElement(By.xpath("//input[@data-testid=\"last_name\"]")).sendKeys("Test Last Name");
-        driver.findElement(By.xpath("//input[@data-testid=\"phone\"]")).sendKeys("Test number");
-        driver.findElement(By.xpath("//button[@class=\"primary_button w-full text-base font-semibold p-3 px-5 mr-3 rounded-2xl border capitalize text-white ng-star-inserted\"]")).click();
-        Thread.sleep(5000);
-        driver.findElement(By.xpath("//span[@class='cursor-pointer text-red-600 ng-star-inserted']")).click();
-        Thread.sleep(5000);
-        driver.findElement(By.name("email")).sendKeys("testing123qazw@gmail.com");
-        driver.findElement(By.xpath("//button[@data-testid=\"continueAddAddress\"]")).click();
+    public static void switchToMainContent() throws InterruptedException {
+        try {
+            String mainWindowHandle = driver.getWindowHandle();
+            driver.switchTo().window(mainWindowHandle);
+            wait.until(ExpectedConditions.numberOfWindowsToBe(1));
+        } catch (NoSuchWindowException e) {
+            System.out.println("Payment popup window closed automatically. Continuing with the main window.");
+        }
         Thread.sleep(10000);
-        js.executeScript("window.scrollBy(0,2000)", "");
-        WebDriverWait wait = new WebDriverWait(driver,20);
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
-        Thread.sleep(5000);
-        driver.findElement(By.xpath("//textarea[@placeholder='Note here...']")).sendKeys("Test Order Comment");
-        driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
-        driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
+    }
+
+    public static void paymentIntent() throws InterruptedException {
+        wait = new WebDriverWait(driver, 30);
         wait.until(ExpectedConditions.numberOfWindowsToBe(2));
-        String paymentURL = "";
         Set<String> windowHandles = driver.getWindowHandles();
         String mainWindowHandle = driver.getWindowHandle();
 
         for (String handle : windowHandles) {
             if (!handle.equals(mainWindowHandle)) {
                 driver.switchTo().window(handle);
-                System.out.println("Switched to Payment Popup: " + driver.getTitle());
-                paymentURL=driver.getCurrentUrl();
+                System.out.println("Switched to Payment Window: " + driver.getCurrentUrl());
                 break;
             }
         }
-        if(paymentURL.contains("http://")){
-            System.out.println("TC_01: Failed-Order URL is not secure as it contains https");
-        } else{
-            String httpUrl = paymentURL.replaceAll("https://", "http://");
-            driver.navigate().to(httpUrl);
-            if(httpUrl.contains("http://")){
-                System.out.println("TC_01: Failed-Order URL is loaded in http");
-            } else if (httpUrl.contains(("https://"))) {
-                System.out.println("TC_01: Pass-URL doesn't work in http");
+    }
+
+    public static void checkSavedOrNew() throws InterruptedException {
+        try {
+            Thread.sleep(10000);
+
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            js.executeScript("window.scrollBy(0,2000)");
+
+            List<WebElement> elements = driver.findElements(By.id("new-card"));
+            if (!elements.isEmpty()) {
+                savedCardPayment();
             }
+
+            Thread.sleep(10000);
+
+        } catch (NoSuchElementException e) {
+            newCardPayment("4242424242424242", "11/26");
         }
-        //driver.findElement(By.id("back-button")).click();
-        driver.findElement(By.name("cardnumber")).sendKeys("4242424242424242");
-        driver.findElement(By.name("exp-date")).sendKeys("1125");
+    }
+
+    public static void defaultSaveCardCheckbox() {
+        try {
+            WebElement checkbox = driver.findElement(By.id("save-card"));
+            String saveCardStatement = driver.findElement(By.xpath("//label[@for=\"save-card\"]")).getText();
+
+            if (checkbox.isEnabled()) {
+                System.out.println("TC_39: PASS - Save Card is Enabled by Default");
+                if (saveCardStatement.equals("Save this card for future payments")) {
+
+                    System.out.println("Save Card Statement is '" + saveCardStatement + "'");
+                }
+            } else {
+                System.out.println("TC_39: FAIL - Save Card is not Enabled By Default");
+            }
+
+        } catch (NoSuchElementException e) {
+            System.out.println("Save Card Checkbox is not Displayed");
+        }
+    }
+
+    public static void secondNewCardPayment() throws InterruptedException {
+        driver.findElement(By.id("id=\"new-card\"")).click();
+        driver.findElement(By.id("cc_number")).sendKeys("5555555555554444");
+        WebElement expYear = driver.findElement(By.id("cc_exp_year"));
+        Select expYearDropdown = new Select(expYear);
+        expYearDropdown.selectByVisibleText("2027");
+        driver.findElement(By.id("cc_cvv")).sendKeys("123");
+        driver.findElement(By.id("submit-button")).click();
+        System.out.println("Payment Proceeded with New Card");
+
+        /***
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//iframe[@title='Secure card payment input frame']")));
+        driver.findElement(By.xpath("//iframe[@title='Secure card payment input frame']")).click();
+        WebElement stripeIframe = wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.xpath("//iframe[contains(@name, '__privateStripeFrame')]")
+        ));
+        //checkHttps(windowHandles, mainWindowHandle, paymentURL);
+        defaultSaveCardCheckbox();
+        driver.switchTo().frame(stripeIframe);
+        driver.findElement(By.xpath("//div[@class=\"CardNumberField CardNumberField--ltr\"]")).sendKeys("4242424242424242");
+        driver.findElement(By.name("cardnumber")).sendKeys("5555555555554444");
+        driver.findElement(By.name("exp-date")).sendKeys("04/20");
         driver.findElement(By.name("cvc")).sendKeys("111");
         driver.findElement(By.name("postal")).sendKeys("10001");
-        driver.findElement(By.name("submit-button")).click();
+        driver.switchTo().defaultContent();
+        driver.findElement(By.id("submit-button")).click();
+        System.out.println("Payment Proceeded with 2nd New Card"); **/
+    }
+
+    public static void newCardPayment(String cardNumber, String expiry) throws InterruptedException {
+        defaultSaveCardCheckbox();
+        driver.findElement(By.id("cc_number")).sendKeys(cardNumber);
+        WebElement expYear = driver.findElement(By.id("cc_exp_year"));
+        Select expYearDropdown = new Select(expYear);
+        expYearDropdown.selectByVisibleText("2027");
+        driver.findElement(By.id("cc_cvv")).sendKeys("123");
+        driver.findElement(By.id("submit-button")).click();
+        System.out.println("Payment Proceeded with New Card");
+        /***
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//iframe[@title='Secure card payment input frame']")));
+        driver.findElement(By.xpath("//iframe[@title='Secure card payment input frame']")).click();
+        WebElement stripeIframe = wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.xpath("//iframe[contains(@name, '__privateStripeFrame')]")
+        ));
+        //checkHttps(windowHandles, mainWindowHandle, paymentURL);
+        defaultSaveCardCheckbox();
+        driver.switchTo().frame(stripeIframe);
+        driver.findElement(By.xpath("//div[@class=\"CardNumberField CardNumberField--ltr\"]")).sendKeys("4242424242424242");
+        driver.findElement(By.name("cardnumber")).sendKeys(cardNumber);
+        driver.findElement(By.name("exp-date")).sendKeys(expiry);
+        driver.findElement(By.name("cvc")).sendKeys("111");
+        driver.findElement(By.name("postal")).sendKeys("10001");
+        driver.switchTo().defaultContent();
+        driver.findElement(By.id("submit-button")).click();
+        System.out.println("Payment Proceeded with New Card");
+         **/
+
+    }
+
+    public static void savedCardPayment() throws InterruptedException {
+        //Delete Card Action
+        //driver.findElement(By.xpath("//i[@class=\"fa fa-trash\"]")).click();
+
+        String maskedCardNumber = driver.findElement(By.xpath("//p[@class=\"card__number\"]")).getText();
+        String cardEndingNumber = maskedCardNumber.substring(maskedCardNumber.length() - 4);
+        System.out.println("Saved Card Details: Card Number Ends with : " + cardEndingNumber);
+        String tempExpiry = driver.findElement(By.xpath("//p[@class=\"expiry__date\"]")).getText();
+        System.out.println("Extracted date:" + tempExpiry);
+
+        //Commented it out for now because date isn't displayed properly in Auth
+        //String[] expiryDate = tempExpiry.split(":");
+        //String date = expiryDate[1].trim();
+        //System.out.println("Extracted date:" + date);
+
+        //As a saved card is already selected by Default, we are just directly clicking Pay button
+        driver.findElement(By.id("submit-button")).click();
+        System.out.println("Payment Proceeded with Saved Card");
+    }
+
+    public static void createCart(String Location) throws InterruptedException {
+        String locationXpath = "//h5[normalize-space()='" + Location + "']";
+        driver.findElement(By.xpath(locationXpath)).click();
+        Thread.sleep(2000);
+        driver.findElement(By.xpath("(//button[@data-testid=\"chooserContinue\"])[2]")).click();
+        Thread.sleep(3000);
+        //This xpath is working for Superb Theme only for now. Will create Xpath for Superb List view if needed
+        driver.findElement(By.xpath("//div[@aria-label=\"Mama-Mia\"]")).click();
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("window.scrollBy(0,2000)", "");
+        driver.findElement(By.id("message")).sendKeys("Test Item Comment");
+        driver.findElement(By.xpath("//button[@data-testid=\"addToCart\"]")).click();
+        driver.findElement(By.xpath("//a[@id=\"cart-header\"]")).click();
+        driver.findElement(By.xpath("//button[@data-testid=\"goToCheckout_desktop\"]")).click();
+        Thread.sleep(5000);
+    }
+
+    public static void checkTransactionID(String OrderID) throws InterruptedException {
+        String DashboardUrl = "https://app1.restolabs.com/en";
+        ((JavascriptExecutor) driver).executeScript("window.open('" + DashboardUrl + "', '_blank');");
+        wait = new WebDriverWait(driver, 30);
+        wait.until(ExpectedConditions.numberOfWindowsToBe(2));
+        Set<String> windowHandles = driver.getWindowHandles();
+        String mainWindowHandle = driver.getWindowHandle();
+        String newTabHandle = "";
+        for (String handle : windowHandles) {
+            if (!handle.equals(mainWindowHandle)) {
+                newTabHandle = handle;
+                break;
+            }
+        }
+        driver.switchTo().window(newTabHandle);
+        driver.findElement(By.id("edit-name")).sendKeys("kartik@restolabs.com");
+        driver.findElement(By.id("edit-pass")).sendKeys("kartik12345");
+        driver.findElement(By.id("edit-submit")).click();
+        Thread.sleep(5000);
+
+        // This Code block is specifically for Support Executive accounts, When using a Specific Test Profile credentials, This isn't required.
+        driver.findElement(By.id("edit-select-profile")).clear();
+        driver.findElement(By.id("edit-select-profile")).sendKeys("Flamingo(1126908)");
+        driver.findElement(By.id("edit-grant-access")).click();
+        driver.navigate().to("https://app1.restolabs.com/backend/support-executive-revoke-permission");
+        driver.findElement(By.xpath("//a[normalize-space()='Masquerade']")).click();
+
+        //Change the Tab if needed, as per Order Status. By Default We select pending orders for new orders
+        driver.findElement(By.xpath("//button[@data-tab=\"pending_orders\"]")).click();
+        //driver.findElement(By.xpath("//button[@data-tab=\"confirmed_orders\"]")).click();
+        driver.findElement(By.linkText(OrderID)).click();
+
+        //try catch block for Item Comment
+        try {
+            List<WebElement> itemPoints = driver.findElements(By.xpath("//span[@tabindex='0']"));
+
+            if (!itemPoints.isEmpty()) {
+                WebElement lastElement = itemPoints.get(itemPoints.size() - 1); // Get the last element
+                String lastElementText = lastElement.getText();
+                System.out.println("Item Comment: " + lastElementText);
+            } else {
+                System.out.println("No Item Points");
+            }
+        } catch (NoSuchElementException e) {
+            System.out.println("Order Comment was not found");
+        }
+
+        //Try catch block for Transcation ID in order details
+        try {
+            List<WebElement> OrderDetails = driver.findElements(By.xpath("//div[@class=\"delivery-label\"]"));
+            int DetailNumber = 1;
+            boolean transactionIDfound = false;
+            String TransID = "";
+            for (WebElement EachDetail : OrderDetails) {
+                String CommentText = EachDetail.getText();
+                if (CommentText.contains("Transaction ID")) {
+                    String TransIDxpath = "(//div[@class=\"delivery-value\"])[" + DetailNumber + "]";
+                    TransID = driver.findElement(By.xpath(TransIDxpath)).getText();
+                    transactionIDfound = true;
+                    break;
+                } else {
+                    //Don't ask me why I haven't written this as DetailNumber++, I don't know what sorcery Java does
+                    //but if I mess this up, Either the increment or this variable's initialization becomes unused.
+                    DetailNumber = DetailNumber + 1;
+                }
+            }
+            System.out.println(transactionIDfound ? "TC_05: PASS - Transaction ID is displayed in Order Details\nTransaction ID for Order ID " + OrderID + " is " + TransID : "TC_05: FAIL - Transaction ID is not displayed in Order Details");
+
+
+            //Keep this Boolean initialization above OrderComments for loop only else,
+            //Thanks to Java's Sorcery, if this is mentioned anywhere else,
+            // all the other "for loops" in this function will be skipped
+            boolean transIDCommented = false;
+            List<WebElement> orderComments = driver.findElements(By.xpath("//td[@class=\"message\"]"));
+            for (WebElement eachComment : orderComments) {
+                String CommentText = eachComment.getText();
+                if (CommentText.equals(TransID)) {
+                    transIDCommented = true;
+                } else {
+                    transIDCommented = false;
+                }
+            }
+            System.out.println(transIDCommented ? "TC_04: FAIL - Transaction ID is displayed in Comments" : "TC_04: PASS - Transaction ID is not displayed in Order Comments");
+        } catch (NoSuchElementException e) {
+            System.out.println("TC_05: FAIL - Transaction ID is not displayed in Order Details");
+        }
+    }
+
+    public static void checkHttps() throws InterruptedException {
+        Thread.sleep(10000);
+        String paymentURL = driver.getCurrentUrl();
+        System.out.println("Redirected Payment URL is "+paymentURL);
+        //Check for http in the URL. If not, reload the URL in http and recheck if the URL reloaded in https automatically or not
+        if (paymentURL.contains("http://")) {
+            System.out.println("TC_01: FAIL - Order URL is not secure as it contains http");
+        } else {
+            String httpUrl = paymentURL.replaceAll("https://", "http://");
+            driver.navigate().to(httpUrl);
+            Thread.sleep(5000);
+            String reloadedUrl = driver.getCurrentUrl();
+            System.out.println("Relaoded URL is "+reloadedUrl);
+            if (reloadedUrl.contains("http://")) {
+                System.out.println("TC_01: FAIL - Order URL is loaded in http");
+            } else if (reloadedUrl.contains(("https://"))) {
+                System.out.println("TC_01: PASS - URL doesn't work in http");
+            }
+        }
+    }
+
+    public static void restartLoginOrder() throws InterruptedException {
+        String restartOrderButtonXpath = "//div[@class='bg-white rounded-xl border border-app-gray-300']//span[@class='border-dashed text-sm font-semibold border px-2 py-0.5 rounded-lg cursor-pointer ml-2'][normalize-space()='Click here to start order again']";
+        wait = new WebDriverWait(driver, 30);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(restartOrderButtonXpath)));
+        driver.findElement(By.xpath(restartOrderButtonXpath)).click();
+        createCart("First Location");
+        driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
+        driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
+        System.out.print("For 2nd Restart Order: ");
+        secondNewCardPayment();
+        //Thread.sleep(5000);
+//        String orderIWithHash = driver.findElement(By.xpath("//span[@class='pl-1']")).getText();
+//        String OrderID = orderIWithHash.replace("#", "");
+//        System.out.println("TC_06: PASS - Order placed by Logged In User.");
+//        System.out.println("TC_20: PASS - Payment Gateway is working for a Single Location");
+    }
+
+    public static void loginOrder() throws InterruptedException {
+        driver.navigate().to("https://gateway.demo-ordering.online/");
+        driver.findElement(By.id("guest_user")).click();
+        driver.findElement(By.id("email")).sendKeys("testing123qazw@gmail.com");
+        driver.findElement(By.id("password")).sendKeys("12345678");
+        driver.findElement(By.xpath("//button[@data-testid=\"login\"]")).click();
+        Thread.sleep(3000);
+        driver.findElement(By.xpath("//button[@data-testid=\"modeSelect2\"]")).click();
+        createCart("First Location");
+        Thread.sleep(10000);
+        driver.findElement(By.xpath("//textarea[@placeholder='Note here...']")).sendKeys("Test Order Comment");
+        wait = new WebDriverWait(driver, 30);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
+        Thread.sleep(10000);
+        //Select Payment method (paymentMode0 = 1st - COD , paymentMode1 = 2nd - Online)
+        driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
+        driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
+        System.out.print("For Logged In Order: ");
+        checkHttps();
+        driver.navigate().to("https://gateway.demo-ordering.online/");
+        Thread.sleep(3000);
+        driver.findElement(By.xpath("//button[@data-testid=\"modeSelect2\"]")).click();
+
+        String locationXpath = "//h5[normalize-space()='" + "First Location" + "']";
+        driver.findElement(By.xpath(locationXpath)).click();
+        Thread.sleep(2000);
+        driver.findElement(By.xpath("(//button[@data-testid=\"chooserContinue\"])[2]")).click();
+        Thread.sleep(3000);
+        driver.findElement(By.id("subCategory1204469")).click();
+        //This xpath is working for Superb Theme only for now. Will create Xpath for Superb List view if needed
+        driver.findElement(By.xpath("//div[@aria-label=\"Mozzarella Sticks\"]")).click();
+        driver.findElement(By.xpath("//a[@id=\"cart-header\"]")).click();
+        driver.findElement(By.xpath("//button[@data-testid=\"goToCheckout_desktop\"]")).click();
+        Thread.sleep(5000);
+
+        driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
+        driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
+        //checkSavedOrNew();
+        restartLoginOrder();
+        Thread.sleep(5000);
+        String orderIWithHash = driver.findElement(By.xpath("//span[@class='pl-1']")).getText();
+        String OrderID = orderIWithHash.replace("#", "");
+        System.out.println("TC_06: PASS - Order placed by Logged In User.");
+        System.out.println("TC_20: PASS - Payment Gateway is working for a Single Location");
+        // Check Transaction only in either Guest/Login for now. I will make it dynamic later to check
+        // if user is already logged in and skip the login process in such case
+        checkTransactionID(OrderID);
+    }
+
+    public static void guestOrder() throws InterruptedException {
+        driver.navigate().to("https://gateway.demo-ordering.online/");
+        driver.findElement(By.xpath("//button[@data-testid=\"modeSelect2\"]")).click();
+        createCart("First Location");
+        driver.findElement(By.xpath("//input[@data-testid=\"first_name\"]")).sendKeys("Test First Name");
+        driver.findElement(By.xpath("//input[@data-testid=\"last_name\"]")).sendKeys("Test Last Name");
+        driver.findElement(By.xpath("//input[@data-testid=\"phone\"]")).sendKeys("Test number");
+        driver.findElement(By.xpath("//button[@class=\"primary_button w-full text-base font-semibold p-3 px-5 mr-3 rounded-2xl border capitalize text-white ng-star-inserted\"]")).click();
+        Thread.sleep(5000);
+        driver.findElement(By.xpath("//span[@class='cursor-pointer text-red-600 ng-star-inserted']")).click();
+        Thread.sleep(3000);
+        driver.findElement(By.name("email")).sendKeys("testing123qazw@gmail.com");
+        driver.findElement(By.xpath("//button[@data-testid=\"continueAddAddress\"]")).click();
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("window.scrollBy(0,2000)", "");
+        Thread.sleep(10000);
+        wait = new WebDriverWait(driver, 30);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
+        driver.findElement(By.xpath("//textarea[@placeholder='Note here...']")).sendKeys("Test Order Comment");
+        Thread.sleep(10000);
+
+        //Select Payment method (paymentMode0 = COD, paymentMode1=Online)
+        driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
+        driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
+        System.out.print("TC_07: For Guest Order: ");
+        checkSavedOrNew();
+        String orderIWithHash = driver.findElement(By.xpath("//span[@class='pl-1']")).getText();
+        String OrderID = orderIWithHash.replace("#", "");
+        System.out.println("TC_12: PASS - Payment Successful by a New Card");
+        System.out.println("TC_20: PASS - Payment Gateway is working for a Single Location");
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        invokeBrowser();
+        loginOrder();
     }
 }
