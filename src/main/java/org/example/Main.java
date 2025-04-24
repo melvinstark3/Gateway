@@ -77,20 +77,14 @@ public class Main {
 
     public static void checkSavedOrNew() throws InterruptedException {
         try {
-            Thread.sleep(10000);
-
-            JavascriptExecutor js = (JavascriptExecutor) driver;
-            js.executeScript("window.scrollBy(0,2000)");
-
             List<WebElement> elements = driver.findElements(By.id("new-card"));
             if (!elements.isEmpty()) {
                 savedCardPayment();
             }
-
             Thread.sleep(10000);
 
         } catch (NoSuchElementException e) {
-            newCardPayment("4242424242424242", "11/26");
+            newCardPayment("4242424242424242");
         }
     }
 
@@ -143,33 +137,26 @@ public class Main {
         System.out.println("Payment Proceeded with 2nd New Card"); **/
     }
 
-    public static void newCardPayment(String cardNumber, String expiry) throws InterruptedException {
+    public static void newCardPayment(String cardNumber) throws InterruptedException {
         defaultSaveCardCheckbox();
-        driver.findElement(By.id("cc_number")).sendKeys(cardNumber);
-        WebElement expYear = driver.findElement(By.id("cc_exp_year"));
+
+        driver.findElement(By.id("submit-button")).click();
+        System.out.println("WordPay Express Page URL is "+driver.getCurrentUrl());
+        String OrderIDonGatewayPage = driver.findElement(By.id("ctl00_mainPage_lbl_WelcomeText")).getText();
+        System.out.println("Entering Card Details for "+OrderIDonGatewayPage);
+
+        driver.findElement(By.id("ctl00_mainPage_txt_CardNumber")).sendKeys(cardNumber);
+
+        WebElement expMonth = driver.findElement(By.id("ctl00_mainPage_ddl_ExpirationMonth"));
+        Select expMonthDropdown = new Select(expMonth);
+        expMonthDropdown.selectByVisibleText("05");
+
+        WebElement expYear = driver.findElement(By.id("ctl00_mainPage_ddl_ExpirationYear"));
         Select expYearDropdown = new Select(expYear);
         expYearDropdown.selectByVisibleText("2027");
-        driver.findElement(By.id("cc_cvv")).sendKeys("123");
-        driver.findElement(By.id("submit-button")).click();
-        System.out.println("Payment Proceeded with New Card");
-        /***
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//iframe[@title='Secure card payment input frame']")));
-        driver.findElement(By.xpath("//iframe[@title='Secure card payment input frame']")).click();
-        WebElement stripeIframe = wait.until(ExpectedConditions.presenceOfElementLocated(
-                By.xpath("//iframe[contains(@name, '__privateStripeFrame')]")
-        ));
-        //checkHttps(windowHandles, mainWindowHandle, paymentURL);
-        defaultSaveCardCheckbox();
-        driver.switchTo().frame(stripeIframe);
-        driver.findElement(By.xpath("//div[@class=\"CardNumberField CardNumberField--ltr\"]")).sendKeys("4242424242424242");
-        driver.findElement(By.name("cardnumber")).sendKeys(cardNumber);
-        driver.findElement(By.name("exp-date")).sendKeys(expiry);
-        driver.findElement(By.name("cvc")).sendKeys("111");
-        driver.findElement(By.name("postal")).sendKeys("10001");
-        driver.switchTo().defaultContent();
-        driver.findElement(By.id("submit-button")).click();
-        System.out.println("Payment Proceeded with New Card");
-         **/
+        driver.findElement(By.id("txt_CVV")).sendKeys("123");
+        driver.findElement(By.id("btn_Submit")).click();
+        System.out.println("Attempting Payment with New Card");
 
     }
 
