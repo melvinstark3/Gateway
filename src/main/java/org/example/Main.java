@@ -80,7 +80,7 @@ public class Main {
         wait = new WebDriverWait(driver, 30);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("submit-button")));
         String paymentURL = driver.getCurrentUrl();
-        System.out.println("Redirected Payment URL is "+paymentURL);
+        System.out.println("Redirected Payment URL is " + paymentURL);
         //Check for http in the URL. If not, reload the URL in http and recheck if the URL reloaded in https automatically or not
         if (paymentURL.contains("http://")) {
             System.out.println("TC_01: FAIL - Order URL is not secure as it contains http");
@@ -89,7 +89,7 @@ public class Main {
             driver.navigate().to(httpUrl);
             Thread.sleep(5000);
             String reloadedUrl = driver.getCurrentUrl();
-            System.out.println("Relaoded URL is "+reloadedUrl);
+            System.out.println("Relaoded URL is " + reloadedUrl);
             if (reloadedUrl.contains("http://")) {
                 System.out.println("TC_01: FAIL - Order URL is loaded in http");
             } else if (reloadedUrl.contains(("https://"))) {
@@ -102,8 +102,8 @@ public class Main {
         wait = new WebDriverWait(driver, 30);
         String OriginalPaymentURL = driver.getCurrentUrl();
         String paymentURL = OriginalPaymentURL.toLowerCase();
-        System.out.println("Payment URL is "+paymentURL);
-        if (paymentURL.contains("world") || paymentURL.contains("express") ) {
+        System.out.println("Payment URL is " + paymentURL);
+        if (paymentURL.contains("world") || paymentURL.contains("express")) {
             System.out.println("TC_30: PASS: URL Contains Gateway's Name it it");
         } else {
             System.out.println("TC_30: PASS: URL doesn't Contain Gateway's Name it it");
@@ -120,7 +120,7 @@ public class Main {
             Thread.sleep(10000);
 
         } catch (NoSuchElementException e) {
-            newCardPayment("4111111111111111",loggedIn);
+            newCardPayment("4111111111111111", loggedIn);
         }
     }
 
@@ -152,6 +152,12 @@ public class Main {
         String locationXpath = "//h5[normalize-space()='" + "First Location" + "']";
         driver.findElement(By.xpath(locationXpath)).click();
         Thread.sleep(2000);
+        try {
+            //For Some reason even after Completed, We get Cart reset Popup, Handle it with Yes for now.
+            driver.findElement(By.xpath("//button[@data-testid=\"Yes\"]")).click();
+        } catch (NoSuchElementException e) {
+            System.out.println("Continuing to Menu");
+        }
         driver.findElement(By.xpath("(//button[@data-testid=\"chooserContinue\"])[2]")).click();
         Thread.sleep(3000);
         driver.findElement(By.id("subCategory1204469")).click();
@@ -168,7 +174,7 @@ public class Main {
         driver.findElement(By.id("back-button")).click();
 
         Thread.sleep(10000);
-        System.out.println("Cancellation of Payment takes User to the URL: "+driver.getCurrentUrl());
+        System.out.println("Cancellation of Payment takes User to the URL: " + driver.getCurrentUrl());
     }
 
     public static void gatewayPageCancellation() throws InterruptedException {
@@ -179,6 +185,12 @@ public class Main {
         String locationXpath = "//h5[normalize-space()='" + "First Location" + "']";
         driver.findElement(By.xpath(locationXpath)).click();
         Thread.sleep(2000);
+        try {
+            //For Some reason even after Completed, We get Cart reset Popup, Handle it with Yes for now.
+            driver.findElement(By.xpath("//button[@data-testid=\"Yes\"]")).click();
+        } catch (NoSuchElementException e) {
+            System.out.println("Continuing to Menu");
+        }
         driver.findElement(By.xpath("(//button[@data-testid=\"chooserContinue\"])[2]")).click();
         Thread.sleep(3000);
         driver.findElement(By.id("subCategory1204469")).click();
@@ -199,12 +211,12 @@ public class Main {
         driver.findElement(By.id("ctl00_mainPage_btn_Cancel")).click();
 
         Thread.sleep(10000);
-        System.out.println("Cancellation of Payment takes User to the URL: "+driver.getCurrentUrl());
+        System.out.println("Cancellation of Payment takes User to the URL: " + driver.getCurrentUrl());
     }
 
     public static void secondNewCardPayment(String cardNumber, boolean loggedIn) throws InterruptedException {
         Thread.sleep(5000);
-        if(loggedIn) {
+        if (loggedIn) {
             String SecondCardPaymentOrderID = driver.findElement(By.xpath("//h4[@class=\"payment__for__id\"]")).getText();
 
             String maskedCardNumber = driver.findElement(By.xpath("//p[@class=\"card__number\"]")).getText();
@@ -219,7 +231,7 @@ public class Main {
 
                 String recheckedCardNumber = driver.findElement(By.xpath("//p[@class=\"card__number\"]")).getText();
                 String recheckedExpiry = driver.findElement(By.xpath("//p[@class=\"expiry__date\"]")).getText();
-                if (Objects.equals(recheckedCardNumber, maskedCardNumber) && Objects.equals(recheckedExpiry, maskedCardNumber)){
+                if (Objects.equals(recheckedCardNumber, maskedCardNumber) && Objects.equals(recheckedExpiry, maskedCardNumber)) {
                     System.out.println("WARNING! Matching Card Details were found after Delete Attempt");
                 } else {
                     System.out.println("TC_37: Pass: Saved Card was Deleted");
@@ -233,9 +245,9 @@ public class Main {
             driver.findElement(By.id("submit-button")).click();
         }
         Thread.sleep(5000);
-        System.out.println("WordPay Express Page URL is "+driver.getCurrentUrl());
+        System.out.println("WordPay Express Page URL is " + driver.getCurrentUrl());
         String OrderIDonGatewayPage = driver.findElement(By.id("ctl00_mainPage_lbl_WelcomeText")).getText();
-        System.out.println("Entering Card Details for "+OrderIDonGatewayPage);
+        System.out.println("Entering Card Details for " + OrderIDonGatewayPage);
 
         driver.findElement(By.id("ctl00_mainPage_txt_CardNumber")).sendKeys(cardNumber);
 
@@ -254,7 +266,7 @@ public class Main {
     public static void newCardPayment(String cardNumber, boolean loggedIn) throws InterruptedException {
         Thread.sleep(5000);
         defaultSaveCardCheckbox();
-        if(loggedIn) {
+        if (loggedIn) {
 
             gatewayNameInURL();
             System.out.println("Checking HTTP/HTTPS for Payment Page URL");
@@ -265,9 +277,9 @@ public class Main {
         }
         Thread.sleep(5000);
         gatewayNameInURL();
-        System.out.println("WordPay Express Page URL is "+driver.getCurrentUrl());
+        System.out.println("WordPay Express Page URL is " + driver.getCurrentUrl());
         String OrderIDonGatewayPage = driver.findElement(By.id("ctl00_mainPage_lbl_WelcomeText")).getText();
-        System.out.println("Entering Card Details for "+OrderIDonGatewayPage);
+        System.out.println("Entering Card Details for " + OrderIDonGatewayPage);
 
         driver.findElement(By.id("ctl00_mainPage_txt_CardNumber")).sendKeys(cardNumber);
 
@@ -284,8 +296,8 @@ public class Main {
     }
 
     public static void savedCardPayment() throws InterruptedException {
-        String SavedCardPaymentOrderID=driver.findElement(By.xpath("//h4[@class=\"payment__for__id\"]")).getText();
-        System.out.println("Attempting Payment for Order ID "+SavedCardPaymentOrderID);
+        String SavedCardPaymentOrderID = driver.findElement(By.xpath("//h4[@class=\"payment__for__id\"]")).getText();
+        System.out.println("Attempting Payment for Order ID " + SavedCardPaymentOrderID);
         String maskedCardNumber = driver.findElement(By.xpath("//p[@class=\"card__number\"]")).getText();
         String cardEndingNumber = maskedCardNumber.substring(maskedCardNumber.length() - 4);
         System.out.println("Saved Card Details: Card Number Ends with : " + cardEndingNumber);
@@ -301,6 +313,13 @@ public class Main {
         String locationXpath = "//h5[normalize-space()='" + Location + "']";
         driver.findElement(By.xpath(locationXpath)).click();
         Thread.sleep(2000);
+
+        try {
+            //For Some reason even after Completed, We get Cart reset Popup, Handle it with Yes for now.
+            driver.findElement(By.xpath("//button[@data-testid=\"Yes\"]")).click();
+        } catch (NoSuchElementException e) {
+            System.out.println("Continuing to Menu");
+        }
         driver.findElement(By.xpath("(//button[@data-testid=\"chooserContinue\"])[2]")).click();
         Thread.sleep(3000);
         //This xpath is working for Superb Theme only for now. Will create Xpath for Superb List view if needed
@@ -436,7 +455,7 @@ public class Main {
         gatewayPageCancellation();
         checkSavedOrNew(loggedIn);
         restartOrderWithData(loggedIn);
-        Thread.sleep(5000);
+        Thread.sleep(10000);
         String orderIWithHash = driver.findElement(By.xpath("//span[@class='pl-1']")).getText();
         String OrderID = orderIWithHash.replace("#", "");
         System.out.println("TC_06: PASS - Order placed by Logged In User.");
@@ -473,6 +492,7 @@ public class Main {
         System.out.println("TC_32: Cash on Delivery Payment wih Gateway");
         driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
         restartOrderWithData(loggedIn);
+        Thread.sleep(10000);
         String orderIWithHash = driver.findElement(By.xpath("//span[@class='pl-1']")).getText();
         String OrderID = orderIWithHash.replace("#", "");
         System.out.println("TC_12: PASS - Payment Successful by a New Card");
