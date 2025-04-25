@@ -145,31 +145,6 @@ public class Main {
     }
 
     public static void paymentPageCancellation() throws InterruptedException {
-        driver.navigate().to("https://gateway.demo-ordering.online/");
-        Thread.sleep(3000);
-        driver.findElement(By.xpath("//button[@data-testid=\"modeSelect2\"]")).click();
-
-        String locationXpath = "//h5[normalize-space()='" + "First Location" + "']";
-        driver.findElement(By.xpath(locationXpath)).click();
-        Thread.sleep(2000);
-        try {
-            //For Some reason even after Completed, We get Cart reset Popup, Handle it with Yes for now.
-            driver.findElement(By.xpath("//button[@data-testid=\"Yes\"]")).click();
-        } catch (NoSuchElementException e) {
-            System.out.println("Continuing to Menu");
-        }
-        driver.findElement(By.xpath("(//button[@data-testid=\"chooserContinue\"])[2]")).click();
-        Thread.sleep(3000);
-        driver.findElement(By.id("subCategory1204469")).click();
-        //This xpath is working for Superb Theme only for now. Will create Xpath for Superb List view if needed
-        driver.findElement(By.xpath("//div[@aria-label=\"Mozzarella Sticks\"]")).click();
-        driver.findElement(By.xpath("//a[@id=\"cart-header\"]")).click();
-        driver.findElement(By.xpath("//button[@data-testid=\"goToCheckout_desktop\"]")).click();
-        Thread.sleep(5000);
-
-        driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
-        driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
-
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("back-button")));
         driver.findElement(By.id("back-button")).click();
 
@@ -207,7 +182,7 @@ public class Main {
         //Cancel Payment using back button
         driver.findElement(By.id("submit-button")).click();
         System.out.println("Attempting Cancellation on WorldPay Gateway Page");
-
+        Thread.sleep(10000);
         driver.findElement(By.id("ctl00_mainPage_btn_Cancel")).click();
 
         Thread.sleep(10000);
@@ -312,14 +287,15 @@ public class Main {
     public static void createCart(String Location) throws InterruptedException {
         String locationXpath = "//h5[normalize-space()='" + Location + "']";
         driver.findElement(By.xpath(locationXpath)).click();
-        Thread.sleep(2000);
-
+        System.out.println("Selected Location : " + Location);
+        Thread.sleep(3000);
         try {
             //For Some reason even after Completed, We get Cart reset Popup, Handle it with Yes for now.
             driver.findElement(By.xpath("//button[@data-testid=\"Yes\"]")).click();
         } catch (NoSuchElementException e) {
             System.out.println("Continuing to Menu");
         }
+        Thread.sleep(3000);
         driver.findElement(By.xpath("(//button[@data-testid=\"chooserContinue\"])[2]")).click();
         Thread.sleep(3000);
         //This xpath is working for Superb Theme only for now. Will create Xpath for Superb List view if needed
@@ -380,7 +356,7 @@ public class Main {
             System.out.println("Order Comment was not found");
         }
 
-        //Try catch block for Transcation ID in order details
+        //Try catch block for Transaction ID in order details
         try {
             List<WebElement> OrderDetails = driver.findElements(By.xpath("//div[@class=\"delivery-label\"]"));
             int DetailNumber = 1;
@@ -453,6 +429,31 @@ public class Main {
         System.out.print("For Logged In Order: ");
         paymentPageCancellation();
         gatewayPageCancellation();
+
+        driver.navigate().to("https://gateway.demo-ordering.online/");
+        Thread.sleep(3000);
+        driver.findElement(By.xpath("//button[@data-testid=\"modeSelect2\"]")).click();
+        String locationXpath = "//h5[normalize-space()='" + "First Location" + "']";
+        driver.findElement(By.xpath(locationXpath)).click();
+        Thread.sleep(2000);
+        try {
+            //For Some reason even after Completed, We get Cart reset Popup, Handle it with Yes for now.
+            driver.findElement(By.xpath("//button[@data-testid=\"Yes\"]")).click();
+        } catch (NoSuchElementException e) {
+            System.out.println("Continuing to Menu");
+        }
+        driver.findElement(By.xpath("(//button[@data-testid=\"chooserContinue\"])[2]")).click();
+        Thread.sleep(3000);
+        driver.findElement(By.id("subCategory1204469")).click();
+        //This xpath is working for Superb Theme only for now. Will create Xpath for Superb List view if needed
+        driver.findElement(By.xpath("//div[@aria-label=\"Mozzarella Sticks\"]")).click();
+        driver.findElement(By.xpath("//a[@id=\"cart-header\"]")).click();
+        driver.findElement(By.xpath("//button[@data-testid=\"goToCheckout_desktop\"]")).click();
+        Thread.sleep(5000);
+        driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
+        driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
+
+
         checkSavedOrNew(loggedIn);
         restartOrderWithData(loggedIn);
         Thread.sleep(10000);
