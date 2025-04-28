@@ -111,11 +111,15 @@ public class Main {
 
     }
 
-    public static void checkSavedOrNew(boolean loggedIn) throws InterruptedException {
+    public static void checkSavedOrNew(String cardNumber, boolean loggedIn) throws InterruptedException {
         try {
+            System.out.println("Checking Saved Card Element");
             List<WebElement> elements = driver.findElements(By.id("new-card"));
             if (!elements.isEmpty()) {
                 savedCardPayment();
+            }
+            else {
+                newCardPayment("4111111111111111", loggedIn);
             }
             Thread.sleep(10000);
 
@@ -203,7 +207,6 @@ public class Main {
             //Delete Card Action
             driver.findElement(By.xpath("//i[@class=\"fa fa-trash\"]")).click();
             try {
-
                 String recheckedCardNumber = driver.findElement(By.xpath("//p[@class=\"card__number\"]")).getText();
                 String recheckedExpiry = driver.findElement(By.xpath("//p[@class=\"expiry__date\"]")).getText();
                 if (Objects.equals(recheckedCardNumber, maskedCardNumber) && Objects.equals(recheckedExpiry, maskedCardNumber)) {
@@ -216,8 +219,7 @@ public class Main {
             }
 
             System.out.println("Attempting Payment for Order ID " + SecondCardPaymentOrderID);
-            driver.findElement(By.id("new-card")).click();
-            driver.findElement(By.id("submit-button")).click();
+            checkSavedOrNew(cardNumber, loggedIn);
         }
         Thread.sleep(5000);
         System.out.println("WordPay Express Page URL is " + driver.getCurrentUrl());
@@ -452,9 +454,7 @@ public class Main {
         Thread.sleep(5000);
         driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
         driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
-
-
-        checkSavedOrNew(loggedIn);
+        checkSavedOrNew("4111111111111111", loggedIn);
         restartOrderWithData(loggedIn);
         Thread.sleep(10000);
         String orderIWithHash = driver.findElement(By.xpath("//span[@class='pl-1']")).getText();
