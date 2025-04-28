@@ -206,6 +206,10 @@ public class Main {
 
             //Delete Card Action
             driver.findElement(By.xpath("//i[@class=\"fa fa-trash\"]")).click();
+            String deleteConfirmation = driver.switchTo().alert().getText();
+            System.out.println("User is being asked: "+deleteConfirmation);
+            System.out.println("Accepting the Alert!");
+            driver.switchTo().alert().accept();
             try {
                 String recheckedCardNumber = driver.findElement(By.xpath("//p[@class=\"card__number\"]")).getText();
                 String recheckedExpiry = driver.findElement(By.xpath("//p[@class=\"expiry__date\"]")).getText();
