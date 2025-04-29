@@ -76,8 +76,7 @@ public class Main {
     }
 
     public static void checkHttps() throws InterruptedException {
-        wait = new WebDriverWait(driver, 30);
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("submit-button")));
+        Thread.sleep(10000);
         String paymentURL = driver.getCurrentUrl();
         System.out.println("Redirected Payment URL is " + paymentURL);
         //Check for http in the URL. If not, reload the URL in http and recheck if the URL reloaded in https automatically or not
@@ -95,6 +94,51 @@ public class Main {
                 System.out.println("TC_01: PASS - URL doesn't work in http");
             }
         }
+    }
+
+    public static void paymentNavigation() throws InterruptedException {
+        driver.navigate().to("https://gateway.demo-ordering.online/");
+        Thread.sleep(3000);
+        driver.findElement(By.xpath("//button[@data-testid=\"modeSelect2\"]")).click();
+
+        String locationXpath = "//h5[normalize-space()='" + "First Location" + "']";
+        driver.findElement(By.xpath(locationXpath)).click();
+        Thread.sleep(2000);
+        try {
+            //For Some reason even after Completed, We get Cart reset Popup, Handle it with Yes for now.
+            driver.findElement(By.xpath("//button[@data-testid=\"Yes\"]")).click();
+        } catch (NoSuchElementException e) {
+            System.out.println("Continuing to Menu");
+        }
+        driver.findElement(By.xpath("(//button[@data-testid=\"chooserContinue\"])[2]")).click();
+        Thread.sleep(3000);
+        driver.findElement(By.id("subCategory1204469")).click();
+        //This xpath is working for Superb Theme only for now. Will create Xpath for Superb List view if needed
+        driver.findElement(By.xpath("//div[@aria-label=\"Mozzarella Sticks\"]")).click();
+        driver.findElement(By.xpath("//a[@id=\"cart-header\"]")).click();
+        driver.findElement(By.xpath("//button[@data-testid=\"goToCheckout_desktop\"]")).click();
+        Thread.sleep(5000);
+
+        driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
+        driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("back-button")));
+    }
+
+    public static void gatewayNavigation() throws InterruptedException {
+       paymentNavigation();
+        try{
+            List<WebElement> elements = driver.findElements(By.id("new-card"));
+            if (!elements.isEmpty()) {
+                driver.findElement(By.xpath("//label[@class=\"saved__payment__card add_new_card_btn\"]")).click();
+            }
+        } catch (NoSuchElementException e){
+            driver.findElement(By.id("submit-button")).click();
+        }
+        finally {
+            driver.findElement(By.id("submit-button")).click();
+        }
+        System.out.println("Checking Hypertext Protocol for Gateway Page");
+        checkHttps();
     }
 
     public static void gatewayNameInURL() throws InterruptedException {
@@ -437,6 +481,10 @@ public class Main {
         System.out.print("For Logged In Order: ");
         paymentPageCancellation();
         gatewayPageCancellation();
+        paymentNavigation();
+        System.out.println("Checking Hypertext Protocol for Payment Page");
+        checkHttps();
+        gatewayNavigation();
 
         driver.navigate().to("https://gateway.demo-ordering.online/");
         Thread.sleep(3000);
