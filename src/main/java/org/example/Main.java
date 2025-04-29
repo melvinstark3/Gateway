@@ -151,7 +151,7 @@ public class Main {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("back-button")));
         driver.findElement(By.id("back-button")).click();
 
-        Thread.sleep(10000);
+        Thread.sleep(15000);
         System.out.println("Cancellation of Payment takes User to the URL: " + driver.getCurrentUrl());
     }
 
@@ -180,10 +180,20 @@ public class Main {
 
         driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
         driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
-
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("back-button")));
-        //Cancel Payment using back button
-        driver.findElement(By.id("submit-button")).click();
+
+        try{
+            List<WebElement> elements = driver.findElements(By.id("new-card"));
+            if (!elements.isEmpty()) {
+                driver.findElement(By.xpath("//label[@class=\"saved__payment__card add_new_card_btn\"]")).click();
+            }
+        } catch (NoSuchElementException e){
+            driver.findElement(By.id("submit-button")).click();
+        }
+        finally {
+            driver.findElement(By.id("submit-button")).click();
+        }
+
         System.out.println("Attempting Cancellation on WorldPay Gateway Page");
         Thread.sleep(10000);
         driver.findElement(By.id("ctl00_mainPage_btn_Cancel")).click();
@@ -250,14 +260,14 @@ public class Main {
         if (loggedIn) {
             System.out.println("Checking Saved Card Element");
             try{
-                List<WebElement> elements = driver.findElements(By.id("new-card"));
+                List<WebElement> elements = driver.findElements(By.xpath("//label[@class=\"saved__payment__card add_new_card_btn\"]"));
                 if (!elements.isEmpty()) {
-                    driver.findElement(By.id("new-card")).click();
-                }
-                else {
-                    driver.findElement(By.id("submit-button")).click();
+                    driver.findElement(By.xpath("//label[@class=\"saved__payment__card add_new_card_btn\"]")).click();
                 }
             } catch (NoSuchElementException e){
+                driver.findElement(By.id("submit-button")).click();
+            }
+            finally {
                 driver.findElement(By.id("submit-button")).click();
             }
             gatewayNameInURL();
@@ -515,7 +525,7 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
         invokeBrowser();
-        guestOrder();
+        //guestOrder();
         loginOrder();
     }
 }
