@@ -256,7 +256,6 @@ public class Main {
             gatewayNameInURL();
             String SavedCardPaymentOrderID = driver.findElement(By.xpath("//h4[@class=\"payment__for__id\"]")).getText();
             System.out.println("Attempting Payment for Order ID " + SavedCardPaymentOrderID);
-            driver.findElement(By.id("submit-button")).click();
         }
         Thread.sleep(5000);
         gatewayNameInURL();
@@ -341,6 +340,7 @@ public class Main {
         driver.findElement(By.id("edit-select-profile")).clear();
         driver.findElement(By.id("edit-select-profile")).sendKeys("Gateway (1204445)");
         driver.findElement(By.id("edit-grant-access")).click();
+        Thread.sleep(5000);
         driver.navigate().to("https://app1.restolabs.com/backend/support-executive-revoke-permission");
         driver.findElement(By.xpath("//a[normalize-space()='Masquerade']")).click();
 
