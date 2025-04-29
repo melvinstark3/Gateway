@@ -222,8 +222,9 @@ public class Main {
             }
             Thread.sleep(5000);
             System.out.println("Attempting Payment for Order ID " + SecondCardPaymentOrderID);
-            checkSavedOrNew(cardNumber, loggedIn);
+            newCardPayment(cardNumber, loggedIn);
         }
+
         Thread.sleep(5000);
         System.out.println("WordPay Express Page URL is " + driver.getCurrentUrl());
         String OrderIDonGatewayPage = driver.findElement(By.id("ctl00_mainPage_lbl_WelcomeText")).getText();
@@ -247,10 +248,19 @@ public class Main {
         Thread.sleep(5000);
         defaultSaveCardCheckbox();
         if (loggedIn) {
-
+            System.out.println("Checking Saved Card Element");
+            try{
+                List<WebElement> elements = driver.findElements(By.id("new-card"));
+                if (!elements.isEmpty()) {
+                    driver.findElement(By.id("new-card")).click();
+                }
+                else {
+                    driver.findElement(By.id("submit-button")).click();
+                }
+            } catch (NoSuchElementException e){
+                driver.findElement(By.id("submit-button")).click();
+            }
             gatewayNameInURL();
-            System.out.println("Checking HTTP/HTTPS for Payment Page URL");
-            checkHttps();
             String SavedCardPaymentOrderID = driver.findElement(By.xpath("//h4[@class=\"payment__for__id\"]")).getText();
             System.out.println("Attempting Payment for Order ID " + SavedCardPaymentOrderID);
             driver.findElement(By.id("submit-button")).click();
