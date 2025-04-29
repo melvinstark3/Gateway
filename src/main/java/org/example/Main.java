@@ -16,7 +16,6 @@ public class Main {
     public static WebDriverWait wait;
 
     public static void invokeBrowser() {
-        String browser = "chrome";
         System.setProperty("webdriver.chrome.driver", "/Users/kartik/Documents/bin/chromedriver");
         driver = new ChromeDriver();
         driver.manage().window().maximize();
@@ -119,12 +118,12 @@ public class Main {
                 savedCardPayment();
             }
             else {
-                newCardPayment("4111111111111111", loggedIn);
+                newCardPayment(cardNumber, loggedIn);
             }
             Thread.sleep(10000);
 
         } catch (NoSuchElementException e) {
-            newCardPayment("4111111111111111", loggedIn);
+            newCardPayment(cardNumber, loggedIn);
         }
     }
 
@@ -221,7 +220,7 @@ public class Main {
             } catch (NoSuchElementException e) {
                 System.out.println("ERROR! No Saved Cards were found. Please Verify the Payment Flow");
             }
-
+            Thread.sleep(5000);
             System.out.println("Attempting Payment for Order ID " + SecondCardPaymentOrderID);
             checkSavedOrNew(cardNumber, loggedIn);
         }
