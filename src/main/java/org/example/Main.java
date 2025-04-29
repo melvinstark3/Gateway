@@ -234,23 +234,6 @@ public class Main {
             System.out.println("Attempting Payment for Order ID " + SecondCardPaymentOrderID);
             newCardPayment(cardNumber, loggedIn);
         }
-
-        Thread.sleep(5000);
-        System.out.println("WordPay Express Page URL is " + driver.getCurrentUrl());
-        String OrderIDonGatewayPage = driver.findElement(By.id("ctl00_mainPage_lbl_WelcomeText")).getText();
-        System.out.println("Entering Card Details for " + OrderIDonGatewayPage);
-
-        driver.findElement(By.id("ctl00_mainPage_txt_CardNumber")).sendKeys(cardNumber);
-
-        WebElement expMonth = driver.findElement(By.id("ctl00_mainPage_ddl_ExpirationMonth"));
-        Select expMonthDropdown = new Select(expMonth);
-        expMonthDropdown.selectByVisibleText("05");
-
-        WebElement expYear = driver.findElement(By.id("ctl00_mainPage_ddl_ExpirationYear"));
-        Select expYearDropdown = new Select(expYear);
-        expYearDropdown.selectByVisibleText("2027");
-        driver.findElement(By.id("txt_CVV")).sendKeys("123");
-        driver.findElement(By.id("btn_Submit")).click();
         System.out.println("Attempting Payment with Second New Card");
     }
 
@@ -260,7 +243,7 @@ public class Main {
         if (loggedIn) {
             System.out.println("Checking Saved Card Element");
             try{
-                List<WebElement> elements = driver.findElements(By.xpath("//label[@class=\"saved__payment__card add_new_card_btn\"]"));
+                List<WebElement> elements = driver.findElements(By.id("new-card"));
                 if (!elements.isEmpty()) {
                     driver.findElement(By.xpath("//label[@class=\"saved__payment__card add_new_card_btn\"]")).click();
                 }
