@@ -385,7 +385,7 @@ public class Main {
         driver.findElement(By.id("edit-select-profile")).sendKeys("Gateway (1204445)");
         driver.findElement(By.id("edit-grant-access")).click();
         Thread.sleep(5000);
-        driver.navigate().to("https://app1.restolabs.com/backend/support-executive-revoke-permission");
+        driver.navigate().to("https://demo.onlineorderalert.com/backend/support-executive-revoke-permission");
         driver.findElement(By.xpath("//a[normalize-space()='Masquerade']")).click();
 
         //Change the Tab if needed, as per Order Status. By Default We select pending orders for new orders
@@ -556,7 +556,7 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
         invokeBrowser();
-        //guestOrder();
+        guestOrder();
         loginOrder();
     }
 }
