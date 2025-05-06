@@ -248,36 +248,34 @@ public class Main {
 
     public static void secondNewCardPayment(String cardNumber, boolean loggedIn) throws InterruptedException {
         Thread.sleep(5000);
-        if (loggedIn) {
-            String SecondCardPaymentOrderID = driver.findElement(By.xpath("//h4[@class=\"payment__for__id\"]")).getText();
+        String SecondCardPaymentOrderID = driver.findElement(By.xpath("//h4[@class=\"payment__for__id\"]")).getText();
 
-            String maskedCardNumber = driver.findElement(By.xpath("//p[@class=\"card__number\"]")).getText();
-            String cardEndingNumber = maskedCardNumber.substring(maskedCardNumber.length() - 4);
-            System.out.print("Attempting to Delete Card Ending with : " + cardEndingNumber);
-            String tempExpiry = driver.findElement(By.xpath("//p[@class=\"expiry__date\"]")).getText();
-            System.out.println(" with Expiry :" + tempExpiry);
+        String maskedCardNumber = driver.findElement(By.xpath("//p[@class=\"card__number\"]")).getText();
+        String cardEndingNumber = maskedCardNumber.substring(maskedCardNumber.length() - 4);
+        System.out.print("Attempting to Delete Card Ending with : " + cardEndingNumber);
+        String tempExpiry = driver.findElement(By.xpath("//p[@class=\"expiry__date\"]")).getText();
+        System.out.println(" with Expiry :" + tempExpiry);
 
-            //Delete Card Action
-            driver.findElement(By.xpath("//i[@class=\"fa fa-trash\"]")).click();
-            String deleteConfirmation = driver.switchTo().alert().getText();
-            System.out.println("User is being asked: "+deleteConfirmation);
-            System.out.println("Accepting the Alert!");
-            driver.switchTo().alert().accept();
-            try {
-                String recheckedCardNumber = driver.findElement(By.xpath("//p[@class=\"card__number\"]")).getText();
-                String recheckedExpiry = driver.findElement(By.xpath("//p[@class=\"expiry__date\"]")).getText();
-                if (Objects.equals(recheckedCardNumber, maskedCardNumber) && Objects.equals(recheckedExpiry, maskedCardNumber)) {
-                    System.out.println("WARNING! Matching Card Details were found after Delete Attempt");
-                } else {
-                    System.out.println("TC_37: Pass: Saved Card was Deleted");
-                }
-            } catch (NoSuchElementException e) {
-                System.out.println("ERROR! No Saved Cards were found. Please Verify the Payment Flow");
+        //Delete Card Action
+        driver.findElement(By.xpath("//i[@class=\"fa fa-trash\"]")).click();
+        String deleteConfirmation = driver.switchTo().alert().getText();
+        System.out.println("User is being asked: "+deleteConfirmation);
+        System.out.println("Accepting the Alert!");
+        driver.switchTo().alert().accept();
+        try {
+            String recheckedCardNumber = driver.findElement(By.xpath("//p[@class=\"card__number\"]")).getText();
+            String recheckedExpiry = driver.findElement(By.xpath("//p[@class=\"expiry__date\"]")).getText();
+            if (Objects.equals(recheckedCardNumber, maskedCardNumber) && Objects.equals(recheckedExpiry, maskedCardNumber)) {
+                System.out.println("WARNING! Matching Card Details were found after Delete Attempt");
+            } else {
+                System.out.println("TC_37: Pass: Saved Card was Deleted");
             }
-            Thread.sleep(5000);
-            System.out.println("Attempting Payment for Order ID " + SecondCardPaymentOrderID);
-            newCardPayment(cardNumber, loggedIn);
+        } catch (NoSuchElementException e) {
+            System.out.println("ERROR! No Saved Cards were found. Please Verify the Payment Flow");
         }
+        Thread.sleep(5000);
+        System.out.println("Attempting Payment for Order ID " + SecondCardPaymentOrderID);
+        newCardPayment(cardNumber, loggedIn);
         System.out.println("Attempting Payment with Second New Card");
     }
 
@@ -292,13 +290,13 @@ public class Main {
         ));
         driver.switchTo().frame(stripeIframe);
         driver.findElement(By.xpath("//div[@class=\"CardNumberField CardNumberField--ltr\"]")).sendKeys("4242424242424242");
-        driver.findElement(By.name("cardnumber")).sendKeys("5555555555554444");
+        driver.findElement(By.name("cardnumber")).sendKeys(cardNumber);
         driver.findElement(By.name("exp-date")).sendKeys("04/20");
         driver.findElement(By.name("cvc")).sendKeys("111");
         driver.findElement(By.name("postal")).sendKeys("10001");
         driver.switchTo().defaultContent();
         driver.findElement(By.id("submit-button")).click();
-        System.out.println("Payment Proceeded with 2nd New Card");
+        System.out.println("Attempting Payment with New Card");
 
 
     }
@@ -314,7 +312,7 @@ public class Main {
 
         //As a saved card is already selected by Default, we are just directly clicking Pay button
         driver.findElement(By.id("submit-button")).click();
-        System.out.println("Payment Proceeded with Saved Card");
+        System.out.println("Attempting Payment with Saved Card");
     }
 
     public static void createCart(String Location) throws InterruptedException {
