@@ -156,7 +156,7 @@ public class Main {
 
     public static void checkSavedOrNew(String cardNumber, boolean loggedIn) throws InterruptedException {
         try {
-            System.out.println("Checking Saved Card Element");
+            System.out.println("Checking Saved Cards");
             List<WebElement> elements = driver.findElements(By.id("new-card"));
             if (!elements.isEmpty()) {
                 savedCardPayment();
@@ -284,41 +284,23 @@ public class Main {
     public static void newCardPayment(String cardNumber, boolean loggedIn) throws InterruptedException {
         Thread.sleep(5000);
         defaultSaveCardCheckbox();
-        if (loggedIn) {
-            System.out.println("Checking Saved Card Element");
-            try{
-                List<WebElement> elements = driver.findElements(By.id("new-card"));
-                if (!elements.isEmpty()) {
-                    driver.findElement(By.xpath("//label[@class=\"saved__payment__card add_new_card_btn\"]")).click();
-                }
-            } catch (NoSuchElementException e){
-                driver.findElement(By.id("submit-button")).click();
-            }
-            finally {
-                driver.findElement(By.id("submit-button")).click();
-            }
-            gatewayNameInURL();
-            String SavedCardPaymentOrderID = driver.findElement(By.xpath("//h4[@class=\"payment__for__id\"]")).getText();
-            System.out.println("Attempting Payment for Order ID " + SavedCardPaymentOrderID);
-        }
-        Thread.sleep(5000);
-        gatewayNameInURL();
-        System.out.println("WordPay Express Page URL is " + driver.getCurrentUrl());
-        String OrderIDonGatewayPage = driver.findElement(By.id("ctl00_mainPage_lbl_WelcomeText")).getText();
-        System.out.println("Entering Card Details for " + OrderIDonGatewayPage);
 
-        driver.findElement(By.id("ctl00_mainPage_txt_CardNumber")).sendKeys(cardNumber);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//iframe[@title='Secure card payment input frame']")));
+        driver.findElement(By.xpath("//iframe[@title='Secure card payment input frame']")).click();
+        WebElement stripeIframe = wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.xpath("//iframe[contains(@name, '__privateStripeFrame')]")
+        ));
+        driver.switchTo().frame(stripeIframe);
+        driver.findElement(By.xpath("//div[@class=\"CardNumberField CardNumberField--ltr\"]")).sendKeys("4242424242424242");
+        driver.findElement(By.name("cardnumber")).sendKeys("5555555555554444");
+        driver.findElement(By.name("exp-date")).sendKeys("04/20");
+        driver.findElement(By.name("cvc")).sendKeys("111");
+        driver.findElement(By.name("postal")).sendKeys("10001");
+        driver.switchTo().defaultContent();
+        driver.findElement(By.id("submit-button")).click();
+        System.out.println("Payment Proceeded with 2nd New Card");
 
-        WebElement expMonth = driver.findElement(By.id("ctl00_mainPage_ddl_ExpirationMonth"));
-        Select expMonthDropdown = new Select(expMonth);
-        expMonthDropdown.selectByVisibleText("05");
 
-        WebElement expYear = driver.findElement(By.id("ctl00_mainPage_ddl_ExpirationYear"));
-        Select expYearDropdown = new Select(expYear);
-        expYearDropdown.selectByVisibleText("2027");
-        driver.findElement(By.id("txt_CVV")).sendKeys("123");
-        driver.findElement(By.id("btn_Submit")).click();
-        System.out.println("Attempting Payment with New Card");
     }
 
     public static void savedCardPayment() throws InterruptedException {
@@ -480,11 +462,9 @@ public class Main {
         driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
         System.out.print("For Logged In Order: ");
         paymentPageCancellation();
-        gatewayPageCancellation();
         paymentNavigation();
         System.out.println("Checking Hypertext Protocol for Payment Page");
         checkHttps();
-        gatewayNavigation();
 
         driver.navigate().to("https://gateway.demo-ordering.online/");
         Thread.sleep(3000);
