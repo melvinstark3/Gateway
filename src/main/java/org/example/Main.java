@@ -144,7 +144,7 @@ public class Main {
         String OriginalPaymentURL = driver.getCurrentUrl();
         String paymentURL = OriginalPaymentURL.toLowerCase();
         System.out.println("Payment URL is " + paymentURL);
-        if (paymentURL.contains("world") || paymentURL.contains("express")) {
+        if (paymentURL.contains("stripe") || paymentURL.contains("connect")) {
             System.out.println("TC_30: PASS: URL Contains Gateway's Name it it");
         } else {
             System.out.println("TC_30: PASS: URL doesn't Contain Gateway's Name it it");
@@ -465,6 +465,7 @@ public class Main {
         System.out.print("For Logged In Order: ");
         paymentPageCancellation();
         paymentNavigation();
+        gatewayNameInURL();
         System.out.println("Checking Hypertext Protocol for Payment Page");
         checkHttps();
 
