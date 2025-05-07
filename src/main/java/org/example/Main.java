@@ -125,16 +125,15 @@ public class Main {
     }
 
     public static void gatewayNavigation() throws InterruptedException {
-       paymentNavigation();
-        try{
+        paymentNavigation();
+        try {
             List<WebElement> elements = driver.findElements(By.id("new-card"));
             if (!elements.isEmpty()) {
                 driver.findElement(By.xpath("//label[@class=\"saved__payment__card add_new_card_btn\"]")).click();
             }
-        } catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             driver.findElement(By.id("submit-button")).click();
-        }
-        finally {
+        } finally {
             driver.findElement(By.id("submit-button")).click();
         }
         System.out.println("Checking Hypertext Protocol for Gateway Page");
@@ -160,8 +159,7 @@ public class Main {
             List<WebElement> elements = driver.findElements(By.id("new-card"));
             if (!elements.isEmpty()) {
                 savedCardPayment();
-            }
-            else {
+            } else {
                 newCardPayment(cardNumber, loggedIn);
             }
             Thread.sleep(10000);
@@ -226,15 +224,14 @@ public class Main {
         driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("back-button")));
 
-        try{
+        try {
             List<WebElement> elements = driver.findElements(By.id("new-card"));
             if (!elements.isEmpty()) {
                 driver.findElement(By.xpath("//label[@class=\"saved__payment__card add_new_card_btn\"]")).click();
             }
-        } catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             driver.findElement(By.id("submit-button")).click();
-        }
-        finally {
+        } finally {
             driver.findElement(By.id("submit-button")).click();
         }
 
@@ -248,32 +245,35 @@ public class Main {
 
     public static void secondNewCardPayment(String cardNumber, boolean loggedIn) throws InterruptedException {
         Thread.sleep(5000);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h4[@class=\"payment__for__id\"]")));
         String SecondCardPaymentOrderID = driver.findElement(By.xpath("//h4[@class=\"payment__for__id\"]")).getText();
+        if (loggedIn) {
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//p[@class=\"card__number\"]")));
+            String maskedCardNumber = driver.findElement(By.xpath("//p[@class=\"card__number\"]")).getText();
+            String cardEndingNumber = maskedCardNumber.substring(maskedCardNumber.length() - 4);
+            System.out.print("Attempting to Delete Card Ending with : " + cardEndingNumber);
+            String tempExpiry = driver.findElement(By.xpath("//p[@class=\"expiry__date\"]")).getText();
+            System.out.println(" with Expiry :" + tempExpiry);
 
-        String maskedCardNumber = driver.findElement(By.xpath("//p[@class=\"card__number\"]")).getText();
-        String cardEndingNumber = maskedCardNumber.substring(maskedCardNumber.length() - 4);
-        System.out.print("Attempting to Delete Card Ending with : " + cardEndingNumber);
-        String tempExpiry = driver.findElement(By.xpath("//p[@class=\"expiry__date\"]")).getText();
-        System.out.println(" with Expiry :" + tempExpiry);
-
-        //Delete Card Action
-        driver.findElement(By.xpath("//i[@class=\"fa fa-trash\"]")).click();
-        String deleteConfirmation = driver.switchTo().alert().getText();
-        System.out.println("User is being asked: "+deleteConfirmation);
-        System.out.println("Accepting the Alert!");
-        driver.switchTo().alert().accept();
-        try {
-            String recheckedCardNumber = driver.findElement(By.xpath("//p[@class=\"card__number\"]")).getText();
-            String recheckedExpiry = driver.findElement(By.xpath("//p[@class=\"expiry__date\"]")).getText();
-            if (Objects.equals(recheckedCardNumber, maskedCardNumber) && Objects.equals(recheckedExpiry, maskedCardNumber)) {
-                System.out.println("WARNING! Matching Card Details were found after Delete Attempt");
-            } else {
-                System.out.println("TC_37: Pass: Saved Card was Deleted");
+            //Delete Card Action
+            driver.findElement(By.xpath("//i[@class=\"fa fa-trash\"]")).click();
+            String deleteConfirmation = driver.switchTo().alert().getText();
+            System.out.println("User is being asked: " + deleteConfirmation);
+            System.out.println("Accepting the Alert!");
+            driver.switchTo().alert().accept();
+            try {
+                String recheckedCardNumber = driver.findElement(By.xpath("//p[@class=\"card__number\"]")).getText();
+                String recheckedExpiry = driver.findElement(By.xpath("//p[@class=\"expiry__date\"]")).getText();
+                if (Objects.equals(recheckedCardNumber, maskedCardNumber) && Objects.equals(recheckedExpiry, maskedCardNumber)) {
+                    System.out.println("WARNING! Matching Card Details were found after Delete Attempt");
+                } else {
+                    System.out.println("TC_37: Pass: Saved Card was Deleted");
+                }
+            } catch (NoSuchElementException e) {
+                System.out.println("ERROR! No Saved Cards were found. Please Verify the Payment Flow");
             }
-        } catch (NoSuchElementException e) {
-            System.out.println("ERROR! No Saved Cards were found. Please Verify the Payment Flow");
+            Thread.sleep(5000);
         }
-        Thread.sleep(5000);
         System.out.println("Attempting Payment for Order ID " + SecondCardPaymentOrderID);
         newCardPayment(cardNumber, loggedIn);
         System.out.println("Attempting Payment with Second New Card");
