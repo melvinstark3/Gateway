@@ -1,0 +1,37 @@
+package org.example;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import static org.example.Main.createCart;
+import static org.example.Main.driver;
+
+public class loginOrder extends Main{
+    public static void loginOrderFlow() throws InterruptedException {
+        boolean loggedIn = true;
+        driver.navigate().to("https://gateway.demo-ordering.online/");
+        WebDriverWait wait = new WebDriverWait(driver, 30);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("guest_user")));
+        driver.findElement(By.id("guest_user")).click();
+        driver.findElement(By.id("email")).sendKeys("testing123qazw@gmail.com");
+        driver.findElement(By.id("password")).sendKeys("12345678");
+        driver.findElement(By.xpath("//button[@data-testid=\"login\"]")).click();
+        Thread.sleep(3000);
+        driver.findElement(By.xpath("//button[@data-testid=\"modeSelect2\"]")).click();
+        createCart("First Location");
+        Thread.sleep(10000);
+        driver.findElement(By.xpath("//textarea[@placeholder='Note here...']")).sendKeys("Test Order Comment");
+        wait = new WebDriverWait(driver, 30);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
+        //Select Payment method (paymentMode0 = 1st - COD , paymentMode1 = 2nd - Online)
+        driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
+        driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
+        System.out.print("For Logged In Order: ");
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        loginOrderFlow();
+        checkSavedOrNew("4242424242424242",true);
+    }
+}

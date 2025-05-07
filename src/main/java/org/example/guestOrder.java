@@ -32,5 +32,6 @@ public class guestOrder extends Main{
         orderFlow();
         //Select Payment method (paymentMode0 = COD, paymentMode1=Online)
         driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
+        driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
     }
 }
