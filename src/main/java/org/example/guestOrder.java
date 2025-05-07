@@ -6,7 +6,8 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class guestOrder extends Main{
-    public static void main(String[] args) throws InterruptedException {
+
+    public static void orderFlow() throws InterruptedException {
         driver.navigate().to("https://gateway.demo-ordering.online/");
         driver.findElement(By.xpath("//button[@data-testid=\"modeSelect2\"]")).click();
         createCart("First Location");
@@ -25,6 +26,10 @@ public class guestOrder extends Main{
         wait = new WebDriverWait(driver, 30);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
         System.out.print("TC_07: For Guest Order: ");
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        orderFlow();
         //Select Payment method (paymentMode0 = COD, paymentMode1=Online)
         driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
     }
