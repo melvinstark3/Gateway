@@ -1,14 +1,13 @@
 package org.example;
 
 import org.openqa.selenium.*;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class Main {
     public static WebDriver driver;
@@ -155,6 +154,7 @@ public class Main {
 
     public static void checkSavedOrNew(String cardNumber, boolean loggedIn) throws InterruptedException {
         try {
+            Thread.sleep(5000);
             System.out.println("Checking Saved Cards");
             List<WebElement> elements = driver.findElements(By.id("new-card"));
             if (!elements.isEmpty()) {
@@ -276,7 +276,7 @@ public class Main {
         }
         System.out.println("Attempting Payment for Order ID " + SecondCardPaymentOrderID);
         newCardPayment(cardNumber, loggedIn);
-        System.out.println("Attempting Payment with Second New Card");
+        System.out.println("Proceeding Payment with Second New Card");
     }
 
     public static void newCardPayment(String cardNumber, boolean loggedIn) throws InterruptedException {
@@ -291,12 +291,12 @@ public class Main {
         driver.switchTo().frame(stripeIframe);
         driver.findElement(By.xpath("//div[@class=\"CardNumberField CardNumberField--ltr\"]")).sendKeys("4242424242424242");
         driver.findElement(By.name("cardnumber")).sendKeys(cardNumber);
-        driver.findElement(By.name("exp-date")).sendKeys("04/20");
+        driver.findElement(By.name("exp-date")).sendKeys("04/30");
         driver.findElement(By.name("cvc")).sendKeys("111");
         driver.findElement(By.name("postal")).sendKeys("10001");
         driver.switchTo().defaultContent();
         driver.findElement(By.id("submit-button")).click();
-        System.out.println("Attempting Payment with New Card");
+        System.out.println("Proceeding Payment with New Card");
 
 
     }
@@ -358,16 +358,18 @@ public class Main {
         driver.findElement(By.id("edit-name")).sendKeys("kartik@restolabs.com");
         driver.findElement(By.id("edit-pass")).sendKeys("kartik123");
         driver.findElement(By.id("edit-submit")).click();
+        System.out.println("Attempting Support Executive Login");
         Thread.sleep(5000);
 
         // This Code block is specifically for Support Executive accounts, When using a Specific Test Profile credentials, This isn't required.
         driver.findElement(By.id("edit-select-profile")).clear();
         driver.findElement(By.id("edit-select-profile")).sendKeys("Gateway (1204445)");
         driver.findElement(By.id("edit-grant-access")).click();
+        System.out.println("Granting Access to Test Profile");
         Thread.sleep(5000);
         driver.navigate().to("https://demo.onlineorderalert.com/backend/support-executive-revoke-permission");
         driver.findElement(By.xpath("//a[normalize-space()='Masquerade']")).click();
-
+        System.out.println("Masquerading Test Profile");
         //Change the Tab if needed, as per Order Status. By Default We select pending orders for new orders
         driver.findElement(By.xpath("//button[@data-tab=\"pending_orders\"]")).click();
         //driver.findElement(By.xpath("//button[@data-tab=\"confirmed_orders\"]")).click();
@@ -444,6 +446,8 @@ public class Main {
     public static void loginOrder() throws InterruptedException {
         boolean loggedIn = true;
         driver.navigate().to("https://gateway.demo-ordering.online/");
+        wait = new WebDriverWait(driver, 30);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("guest_user")));
         driver.findElement(By.id("guest_user")).click();
         driver.findElement(By.id("email")).sendKeys("testing123qazw@gmail.com");
         driver.findElement(By.id("password")).sendKeys("12345678");
@@ -486,9 +490,10 @@ public class Main {
         Thread.sleep(5000);
         driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
         driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
-        checkSavedOrNew("4111111111111111", loggedIn);
+
+        checkSavedOrNew("4242424242424242", loggedIn);
         restartOrderWithData(loggedIn);
-        Thread.sleep(10000);
+        Thread.sleep(15000);
         String orderIWithHash = driver.findElement(By.xpath("//span[@class='pl-1']")).getText();
         String OrderID = orderIWithHash.replace("#", "");
         System.out.println("TC_06: PASS - Order placed by Logged In User.");
