@@ -6,6 +6,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class checkHttps extends Main{
     public static void main(String[] args) throws InterruptedException {
+        invokeBrowser();
         driver.navigate().to("https://gateway.demo-ordering.online/");
         driver.findElement(By.xpath("//button[@data-testid=\"modeSelect2\"]")).click();
         createCart("First Location");

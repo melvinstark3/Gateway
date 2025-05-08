@@ -29,6 +29,7 @@ public class guestOrder extends Main{
     }
 
     public static void main(String[] args) throws InterruptedException {
+        invokeBrowser();
         orderFlow();
         //Select Payment method (paymentMode0 = COD, paymentMode1=Online)
         driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();

@@ -420,11 +420,7 @@ public class Main {
             List<WebElement> orderComments = driver.findElements(By.xpath("//td[@class=\"message\"]"));
             for (WebElement eachComment : orderComments) {
                 String CommentText = eachComment.getText();
-                if (CommentText.equals(TransID)) {
-                    transIDCommented = true;
-                } else {
-                    transIDCommented = false;
-                }
+                transIDCommented = CommentText.equals(TransID);
             }
             System.out.println(transIDCommented ? "TC_04: FAIL - Transaction ID is displayed in Comments" : "TC_04: PASS - Transaction ID is not displayed in Order Comments");
         } catch (NoSuchElementException e) {
