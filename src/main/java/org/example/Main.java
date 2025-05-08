@@ -171,6 +171,7 @@ public class Main {
 
     public static void defaultSaveCardCheckbox() {
         try {
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("back-button")));
             WebElement checkbox = driver.findElement(By.id("save-card"));
             String saveCardStatement = driver.findElement(By.xpath("//label[@for=\"save-card\"]")).getText();
 
