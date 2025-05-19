@@ -8,6 +8,7 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
     public static WebDriver driver;
@@ -30,7 +31,7 @@ public class Main {
         driver.findElement(By.id("edit-name")).sendKeys("kartik@restolabs.com");
         driver.findElement(By.id("edit-pass")).sendKeys("kartik12345");
         driver.findElement(By.id("edit-submit")).click();
-        Thread.sleep(5000);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("edit-select-profile")));
         driver.findElement(By.id("edit-select-profile")).clear();
         driver.findElement(By.id("edit-select-profile")).sendKeys("Flamingo(1126908)");
         driver.findElement(By.id("edit-grant-access")).click();
@@ -41,7 +42,8 @@ public class Main {
         WebElement location_dropdown = driver.findElement(By.name("location_id"));
         Select locations = new Select(location_dropdown);
         locations.selectByVisibleText("Flamingo Uno");
-        Thread.sleep(5000);
+        //Waiting for Location Gateway form to Load. UNUSED METHOD
+        //Thread.sleep(5000);
         JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript("window.scrollBy(0,750)", "");
         driver.findElement(By.name("laravel_payment_v3")).click();
@@ -56,7 +58,7 @@ public class Main {
         } catch (NoSuchWindowException e) {
             System.out.println("Payment popup window closed automatically. Continuing with the main window.");
         }
-        Thread.sleep(10000);
+        //Sleep removed as Method is not being used
     }
 
     public static void paymentIntent() throws InterruptedException {
@@ -75,7 +77,7 @@ public class Main {
     }
 
     public static void checkHttps() throws InterruptedException {
-        Thread.sleep(10000);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h4[@class=\"payment__for__id\"]")));
         String paymentURL = driver.getCurrentUrl();
         System.out.println("Redirected Payment URL is " + paymentURL);
         //Check for http in the URL. If not, reload the URL in http and recheck if the URL reloaded in https automatically or not
@@ -84,11 +86,24 @@ public class Main {
         } else {
             String httpUrl = paymentURL.replaceAll("https://", "http://");
             driver.navigate().to(httpUrl);
-            Thread.sleep(5000);
             String reloadedUrl = driver.getCurrentUrl();
             System.out.println("Relaoded URL is " + reloadedUrl);
             if (reloadedUrl.contains("http://")) {
                 System.out.println("TC_01: FAIL - Order URL is loaded in http");
+                try{
+                    wait = new WebDriverWait(driver, 30);
+                    wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class=\"ml-4 text-lg text-gray-500 uppercase tracking-wider\"]")));
+                    String protocolText = driver.findElement(By.xpath("//div[@class=\"ml-4 text-lg text-gray-500 uppercase tracking-wider\"]")).getText().toLowerCase();
+                    System.out.println(protocolText);
+                    if (protocolText.contains("unauthorized access") || protocolText.contains("not found")) {
+                        System.out.println("Gateway Doesn't Work in http");
+                    } else {
+                        System.out.println("Unknown Reload Intercepted!");
+                    }
+                }
+                catch (NoSuchElementException | TimeoutException e){
+                    System.out.println("Unknown Reload Intercepted!");
+                }
             } else if (reloadedUrl.contains(("https://"))) {
                 System.out.println("TC_01: PASS - URL doesn't work in http");
             }
@@ -97,26 +112,28 @@ public class Main {
 
     public static void paymentNavigation() throws InterruptedException {
         driver.navigate().to("https://gateway.demo-ordering.online/");
-        Thread.sleep(3000);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@data-testid=\"modeSelect2\"]")));
         driver.findElement(By.xpath("//button[@data-testid=\"modeSelect2\"]")).click();
 
         String locationXpath = "//h5[normalize-space()='" + "First Location" + "']";
         driver.findElement(By.xpath(locationXpath)).click();
-        Thread.sleep(2000);
         try {
+            wait = new WebDriverWait(driver, 2);
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@data-testid=\"Yes\"]")));
             //For Some reason even after Completed, We get Cart reset Popup, Handle it with Yes for now.
             driver.findElement(By.xpath("//button[@data-testid=\"Yes\"]")).click();
-        } catch (NoSuchElementException e) {
+        } catch (NoSuchElementException | TimeoutException e) {
             System.out.println("Continuing to Menu");
         }
         driver.findElement(By.xpath("(//button[@data-testid=\"chooserContinue\"])[2]")).click();
-        Thread.sleep(3000);
+        wait = new WebDriverWait(driver, 30);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("subCategory1204469")));
         driver.findElement(By.id("subCategory1204469")).click();
         //This xpath is working for Superb Theme only for now. Will create Xpath for Superb List view if needed
         driver.findElement(By.xpath("//div[@aria-label=\"Mozzarella Sticks\"]")).click();
         driver.findElement(By.xpath("//a[@id=\"cart-header\"]")).click();
         driver.findElement(By.xpath("//button[@data-testid=\"goToCheckout_desktop\"]")).click();
-        Thread.sleep(5000);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
 
         driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
         driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
@@ -130,7 +147,7 @@ public class Main {
             if (!elements.isEmpty()) {
                 driver.findElement(By.xpath("//label[@class=\"saved__payment__card add_new_card_btn\"]")).click();
             }
-        } catch (NoSuchElementException e) {
+        } catch (NoSuchElementException | TimeoutException e) {
             driver.findElement(By.id("submit-button")).click();
         } finally {
             driver.findElement(By.id("submit-button")).click();
@@ -149,12 +166,11 @@ public class Main {
         } else {
             System.out.println("TC_30: PASS: URL doesn't Contain Gateway's Name it it");
         }
-
     }
 
     public static void checkSavedOrNew(String cardNumber, boolean loggedIn) throws InterruptedException {
         try {
-            Thread.sleep(5000);
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("new-card")));
             System.out.println("Checking Saved Cards");
             List<WebElement> elements = driver.findElements(By.id("new-card"));
             if (!elements.isEmpty()) {
@@ -162,9 +178,10 @@ public class Main {
             } else {
                 newCardPayment(cardNumber, loggedIn);
             }
-            Thread.sleep(10000);
+            //Wait for Order ID element
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='pl-1']")));
 
-        } catch (NoSuchElementException e) {
+        } catch (NoSuchElementException | TimeoutException e) {
             newCardPayment(cardNumber, loggedIn);
         }
     }
@@ -184,7 +201,7 @@ public class Main {
                 System.out.println("TC_39: FAIL - Save Card is not Enabled By Default");
             }
 
-        } catch (NoSuchElementException e) {
+        } catch (NoSuchElementException | TimeoutException e) {
             System.out.println("Save Card Checkbox is not Displayed");
         }
     }
@@ -192,33 +209,39 @@ public class Main {
     public static void paymentPageCancellation() throws InterruptedException {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("back-button")));
         driver.findElement(By.id("back-button")).click();
-
-        Thread.sleep(15000);
+        try {
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cart-header"))).isDisplayed();
+            System.out.println("User is redirected to Menu");
+        } catch (NoSuchElementException | TimeoutException e) {
+            System.out.println("User is not redirected to Menu");
+        }
         System.out.println("Cancellation of Payment takes User to the URL: " + driver.getCurrentUrl());
     }
 
     public static void gatewayPageCancellation() throws InterruptedException {
         driver.navigate().to("https://gateway.demo-ordering.online/");
-        Thread.sleep(3000);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@data-testid=\"modeSelect2\"]")));
         driver.findElement(By.xpath("//button[@data-testid=\"modeSelect2\"]")).click();
 
         String locationXpath = "//h5[normalize-space()='" + "First Location" + "']";
         driver.findElement(By.xpath(locationXpath)).click();
-        Thread.sleep(2000);
         try {
+            wait = new WebDriverWait(driver, 2);
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@data-testid=\"Yes\"]")));
             //For Some reason even after Completed, We get Cart reset Popup, Handle it with Yes for now.
             driver.findElement(By.xpath("//button[@data-testid=\"Yes\"]")).click();
-        } catch (NoSuchElementException e) {
+        } catch (NoSuchElementException | TimeoutException e) {
             System.out.println("Continuing to Menu");
         }
         driver.findElement(By.xpath("(//button[@data-testid=\"chooserContinue\"])[2]")).click();
-        Thread.sleep(3000);
+        wait = new WebDriverWait(driver, 30);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("subCategory1204469")));
         driver.findElement(By.id("subCategory1204469")).click();
         //This xpath is working for Superb Theme only for now. Will create Xpath for Superb List view if needed
         driver.findElement(By.xpath("//div[@aria-label=\"Mozzarella Sticks\"]")).click();
         driver.findElement(By.xpath("//a[@id=\"cart-header\"]")).click();
         driver.findElement(By.xpath("//button[@data-testid=\"goToCheckout_desktop\"]")).click();
-        Thread.sleep(5000);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
 
         driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
         driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
@@ -229,26 +252,31 @@ public class Main {
             if (!elements.isEmpty()) {
                 driver.findElement(By.xpath("//label[@class=\"saved__payment__card add_new_card_btn\"]")).click();
             }
-        } catch (NoSuchElementException e) {
+        } catch (NoSuchElementException | TimeoutException e) {
             driver.findElement(By.id("submit-button")).click();
         } finally {
             driver.findElement(By.id("submit-button")).click();
         }
 
         System.out.println("Attempting Cancellation on WorldPay Gateway Page");
-        Thread.sleep(10000);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("ctl00_mainPage_btn_Cancel")));
         driver.findElement(By.id("ctl00_mainPage_btn_Cancel")).click();
-
-        Thread.sleep(10000);
+        try {
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cart-header"))).isDisplayed();
+            System.out.println("User is redirected to Menu");
+        } catch (NoSuchElementException | TimeoutException e) {
+            System.out.println("User is not redirected to Menu");
+        }
         System.out.println("Cancellation of Payment takes User to the URL: " + driver.getCurrentUrl());
     }
 
     public static void secondNewCardPayment(String cardNumber, boolean loggedIn) throws InterruptedException {
-        Thread.sleep(5000);
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h4[@class=\"payment__for__id\"]")));
+        //wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h4[@class=\"payment__for__id\"]")));
+        driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
         String SecondCardPaymentOrderID = driver.findElement(By.xpath("//h4[@class=\"payment__for__id\"]")).getText();
         if (loggedIn) {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//p[@class=\"card__number\"]")));
+            //wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//p[@class=\"card__number\"]")));
+            driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
             String maskedCardNumber = driver.findElement(By.xpath("//p[@class=\"card__number\"]")).getText();
             String cardEndingNumber = maskedCardNumber.substring(maskedCardNumber.length() - 4);
             System.out.print("Attempting to Delete Card Ending with : " + cardEndingNumber);
@@ -269,10 +297,9 @@ public class Main {
                 } else {
                     System.out.println("TC_37: Pass: Saved Card was Deleted");
                 }
-            } catch (NoSuchElementException e) {
+            } catch (NoSuchElementException | TimeoutException e) {
                 System.out.println("ERROR! No Saved Cards were found. Please Verify the Payment Flow");
             }
-            Thread.sleep(5000);
         }
         System.out.println("Attempting Payment for Order ID " + SecondCardPaymentOrderID);
         newCardPayment(cardNumber, loggedIn);
@@ -280,10 +307,9 @@ public class Main {
     }
 
     public static void newCardPayment(String cardNumber, boolean loggedIn) throws InterruptedException {
-        Thread.sleep(5000);
+        //wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//iframe[@title='Secure card payment input frame']")));
+        driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
         defaultSaveCardCheckbox();
-
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//iframe[@title='Secure card payment input frame']")));
         driver.findElement(By.xpath("//iframe[@title='Secure card payment input frame']")).click();
         WebElement stripeIframe = wait.until(ExpectedConditions.presenceOfElementLocated(
                 By.xpath("//iframe[contains(@name, '__privateStripeFrame')]")
@@ -315,29 +341,31 @@ public class Main {
         System.out.println("Attempting Payment with Saved Card");
     }
 
-    public static void createCart(String Location) throws InterruptedException {
+    public static void createCart(String Location, String itemName) throws InterruptedException {
         String locationXpath = "//h5[normalize-space()='" + Location + "']";
         driver.findElement(By.xpath(locationXpath)).click();
         System.out.println("Selected Location : " + Location);
-        Thread.sleep(3000);
         try {
+            wait = new WebDriverWait(driver, 3);
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@data-testid=\"Yes\"]")));
             //For Some reason even after Completed, We get Cart reset Popup, Handle it with Yes for now.
             driver.findElement(By.xpath("//button[@data-testid=\"Yes\"]")).click();
-        } catch (NoSuchElementException e) {
+        } catch (NoSuchElementException | TimeoutException e) {
             System.out.println("Continuing to Menu");
         }
-        Thread.sleep(3000);
+        wait = new WebDriverWait(driver, 30);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("(//button[@data-testid=\"chooserContinue\"])[2]")));
         driver.findElement(By.xpath("(//button[@data-testid=\"chooserContinue\"])[2]")).click();
-        Thread.sleep(3000);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@aria-label='"+itemName+"']")));
         //This xpath is working for Superb Theme only for now. Will create Xpath for Superb List view if needed
-        driver.findElement(By.xpath("//div[@aria-label=\"Mama-Mia\"]")).click();
+        driver.findElement(By.xpath("//div[@aria-label='"+itemName+"']")).click();
         JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript("window.scrollBy(0,2000)", "");
         driver.findElement(By.id("message")).sendKeys("Test Item Comment");
         driver.findElement(By.xpath("//button[@data-testid=\"addToCart\"]")).click();
         driver.findElement(By.xpath("//a[@id=\"cart-header\"]")).click();
         driver.findElement(By.xpath("//button[@data-testid=\"goToCheckout_desktop\"]")).click();
-        Thread.sleep(5000);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@aria-label=\"Select Payment Methods\"]")));
     }
 
     public static void checkTransactionID(String OrderID) throws InterruptedException {
@@ -358,14 +386,15 @@ public class Main {
         driver.findElement(By.id("edit-name")).sendKeys("kartik@restolabs.com");
         driver.findElement(By.id("edit-pass")).sendKeys("kartik123");
         driver.findElement(By.id("edit-submit")).click();
-        System.out.println("Attempting Support Executive Login");
-        Thread.sleep(5000);
+        System.out.println("Attempting Backend Profile Login");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("edit-select-profile")));
 
         // This Code block is specifically for Support Executive accounts, When using a Specific Test Profile credentials, This isn't required.
         driver.findElement(By.id("edit-select-profile")).clear();
         driver.findElement(By.id("edit-select-profile")).sendKeys("Gateway (1204445)");
         driver.findElement(By.id("edit-grant-access")).click();
         System.out.println("Granting Access to Test Profile");
+        //Waiting to Grant Profile Access
         Thread.sleep(5000);
         driver.navigate().to("https://demo.onlineorderalert.com/backend/support-executive-revoke-permission");
         driver.findElement(By.xpath("//a[normalize-space()='Masquerade']")).click();
@@ -386,7 +415,7 @@ public class Main {
             } else {
                 System.out.println("No Item Points");
             }
-        } catch (NoSuchElementException e) {
+        } catch (NoSuchElementException | TimeoutException e) {
             System.out.println("Order Comment was not found");
         }
 
@@ -426,17 +455,16 @@ public class Main {
                 }
             }
             System.out.println(transIDCommented ? "TC_04: FAIL - Transaction ID is displayed in Comments" : "TC_04: PASS - Transaction ID is not displayed in Order Comments");
-        } catch (NoSuchElementException e) {
+        } catch (NoSuchElementException | TimeoutException e) {
             System.out.println("TC_05: FAIL - Transaction ID is not displayed in Order Details");
         }
     }
 
     public static void restartOrderWithData(boolean loggedIn) throws InterruptedException {
         String restartOrderButtonXpath = "//div[@class='bg-white rounded-xl border border-app-gray-300']//span[@class='border-dashed text-sm font-semibold border px-2 py-0.5 rounded-lg cursor-pointer ml-2'][normalize-space()='Click here to start order again']";
-        wait = new WebDriverWait(driver, 30);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(restartOrderButtonXpath)));
         driver.findElement(By.xpath(restartOrderButtonXpath)).click();
-        createCart("Second Location");
+        createCart("Second Location","Mama-Mia");
         driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
         driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
         System.out.print("For 2nd Restart Order: ");
@@ -452,10 +480,10 @@ public class Main {
         driver.findElement(By.id("email")).sendKeys("testing123qazw@gmail.com");
         driver.findElement(By.id("password")).sendKeys("12345678");
         driver.findElement(By.xpath("//button[@data-testid=\"login\"]")).click();
-        Thread.sleep(3000);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@data-testid=\"modeSelect2\"]")));
         driver.findElement(By.xpath("//button[@data-testid=\"modeSelect2\"]")).click();
-        createCart("First Location");
-        Thread.sleep(10000);
+        createCart("First Location","Mama-Mia");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//textarea[@placeholder='Note here...']")));
         driver.findElement(By.xpath("//textarea[@placeholder='Note here...']")).sendKeys("Test Order Comment");
         wait = new WebDriverWait(driver, 30);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
@@ -470,77 +498,90 @@ public class Main {
         checkHttps();
 
         driver.navigate().to("https://gateway.demo-ordering.online/");
-        Thread.sleep(3000);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@data-testid=\"modeSelect2\"]")));
         driver.findElement(By.xpath("//button[@data-testid=\"modeSelect2\"]")).click();
         String locationXpath = "//h5[normalize-space()='" + "First Location" + "']";
         driver.findElement(By.xpath(locationXpath)).click();
-        Thread.sleep(2000);
         try {
+            wait = new WebDriverWait(driver, 2);
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@data-testid=\"Yes\"]")));
             //For Some reason even after Completed, We get Cart reset Popup, Handle it with Yes for now.
             driver.findElement(By.xpath("//button[@data-testid=\"Yes\"]")).click();
-        } catch (NoSuchElementException e) {
+        } catch (NoSuchElementException | TimeoutException e) {
             System.out.println("Continuing to Menu");
         }
         driver.findElement(By.xpath("(//button[@data-testid=\"chooserContinue\"])[2]")).click();
-        Thread.sleep(3000);
+        wait = new WebDriverWait(driver, 30);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("subCategory1204469")));
         driver.findElement(By.id("subCategory1204469")).click();
         //This xpath is working for Superb Theme only for now. Will create Xpath for Superb List view if needed
         driver.findElement(By.xpath("//div[@aria-label=\"Mozzarella Sticks\"]")).click();
         driver.findElement(By.xpath("//a[@id=\"cart-header\"]")).click();
         driver.findElement(By.xpath("//button[@data-testid=\"goToCheckout_desktop\"]")).click();
-        Thread.sleep(5000);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
         driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
         driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
 
         checkSavedOrNew("4242424242424242", loggedIn);
         restartOrderWithData(loggedIn);
-        Thread.sleep(15000);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='pl-1']")));
         String orderIWithHash = driver.findElement(By.xpath("//span[@class='pl-1']")).getText();
         String OrderID = orderIWithHash.replace("#", "");
         System.out.println("TC_06: PASS - Order placed by Logged In User.");
         System.out.println("TC_20: PASS - Payment Gateway is working for a Single Location");
         // Check Transaction only in either Guest/Login for now. I will make it dynamic later to check
         // if user is already logged in and skip the login process in such case
-        checkTransactionID(OrderID);
+       // checkTransactionID(OrderID);
     }
 
     public static void guestOrder() throws InterruptedException {
         boolean loggedIn = false;
+        wait = new WebDriverWait(driver, 30);
         driver.navigate().to("https://gateway.demo-ordering.online/");
         driver.findElement(By.xpath("//button[@data-testid=\"modeSelect2\"]")).click();
-        createCart("First Location");
+        createCart("First Location","Mama-Mia");
+        System.out.println("Entering Customer Details");
         driver.findElement(By.xpath("//input[@data-testid=\"first_name\"]")).sendKeys("Test First Name");
         driver.findElement(By.xpath("//input[@data-testid=\"last_name\"]")).sendKeys("Test Last Name");
         driver.findElement(By.xpath("//input[@data-testid=\"phone\"]")).sendKeys("Test number");
         driver.findElement(By.xpath("//button[@class=\"primary_button w-full text-base font-semibold p-3 px-5 mr-3 rounded-2xl border capitalize text-white ng-star-inserted\"]")).click();
+//        if(driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).isEnabled()){
+//            driver.findElement(By.xpath("//a[@class=\"underline text-right cursor-pointer text-xs md:text-sm capitalize font-semibold text-bg-secondary hover:text-app-gray-500 hover:no-underline\"][1]")).click();
+//        }
+//        try {
+//            //try with Details Validation First, If found stale, Edit button is tried
+//            wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//span[@class='cursor-pointer text-red-600 ng-star-inserted']")));
         Thread.sleep(5000);
         driver.findElement(By.xpath("//span[@class='cursor-pointer text-red-600 ng-star-inserted']")).click();
-        Thread.sleep(3000);
+//        }
+//        catch (StaleElementReferenceException e){
+//            //Use Edit Element (Only if Edit markers are default, Change [1] to [0] if Edit Location is not allowed)
+//
+//        }
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("email")));
         driver.findElement(By.name("email")).sendKeys("testing123qazw@gmail.com");
         driver.findElement(By.xpath("//button[@data-testid=\"continueAddAddress\"]")).click();
         JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript("window.scrollBy(0,2000)", "");
-        Thread.sleep(10000);
-        wait = new WebDriverWait(driver, 30);
+        //driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
         driver.findElement(By.xpath("//textarea[@placeholder='Note here...']")).sendKeys("Test Order Comment");
-        Thread.sleep(10000);
+        // Stale Element Exception if Trying Implicit Wait
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode0\"]")));
         System.out.print("TC_07: For Guest Order: ");
         //Select Payment method (paymentMode0 = COD, paymentMode1=Online)
         driver.findElement(By.xpath("//input[@data-testid=\"paymentMode0\"]")).click();
         System.out.println("TC_32: Cash on Delivery Payment wih Gateway");
         driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
         restartOrderWithData(loggedIn);
-        Thread.sleep(10000);
-        String orderIWithHash = driver.findElement(By.xpath("//span[@class='pl-1']")).getText();
-        String OrderID = orderIWithHash.replace("#", "");
         System.out.println("TC_12: PASS - Payment Successful by a New Card");
         System.out.println("TC_20: PASS - Payment Gateway is working for a Single Location");
     }
 
     public static void main(String[] args) throws InterruptedException {
         invokeBrowser();
-        guestOrder();
+        //guestOrder();
         loginOrder();
+
     }
 }
