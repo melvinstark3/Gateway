@@ -8,6 +8,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class guestOrder extends Main{
 
     public static void orderFlow() throws InterruptedException {
+        wait = new WebDriverWait(driver, 30);
         driver.navigate().to("https://gateway.demo-ordering.online/");
         driver.findElement(By.xpath("//button[@data-testid=\"modeSelect2\"]")).click();
         createCart("First Location");
@@ -17,14 +18,13 @@ public class guestOrder extends Main{
         driver.findElement(By.xpath("//button[@class=\"primary_button w-full text-base font-semibold p-3 px-5 mr-3 rounded-2xl border capitalize text-white ng-star-inserted\"]")).click();
         Thread.sleep(5000);
         driver.findElement(By.xpath("//span[@class='cursor-pointer text-red-600 ng-star-inserted']")).click();
-        Thread.sleep(3000);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("email")));
         driver.findElement(By.name("email")).sendKeys("testing123qazw@gmail.com");
         driver.findElement(By.xpath("//button[@data-testid=\"continueAddAddress\"]")).click();
         JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript("window.scrollBy(0,2000)", "");
-        Thread.sleep(10000);
-        wait = new WebDriverWait(driver, 30);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
+        driver.findElement(By.xpath("//input[@data-testid=\"paymentMode0\"]")).click();
         System.out.print("TC_07: For Guest Order: ");
     }
 
