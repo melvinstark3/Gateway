@@ -206,6 +206,32 @@ public class Main {
         }
     }
 
+    public static void pageBackPostOrder() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[@aria-label=\"Back To Home\"]")));
+        driver.findElement(By.xpath("//a[@aria-label=\"Back To Home\"]")).click();
+        try {
+            String pageBackURL = driver.getCurrentUrl();
+            if (Objects.equals(pageBackURL, "https://gateway.demo-ordering.online/en/order/selector")){
+                System.out.println("TC 17: Pass: User is redirected to Selector page");
+            }
+        } catch (NoSuchElementException | TimeoutException e) {
+            System.out.println("TC 17: Fail : User is redirected to "+driver.getCurrentUrl());
+        }
+    }
+
+    public static void browserBackPostOrder() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[@aria-label=\"Back To Home\"]")));
+        driver.navigate().back();
+        try {
+            String pageBackURL = driver.getCurrentUrl();
+            if (Objects.equals(pageBackURL, "https://gateway.demo-ordering.online/en/order/selector")){
+                System.out.println("TC 18: Pass: User is redirected to Selector page");
+            }
+        } catch (NoSuchElementException | TimeoutException e) {
+            System.out.println("TC 18: Fail : User is redirected to "+driver.getCurrentUrl());
+        }
+    }
+
     public static void paymentPageCancellation() throws InterruptedException {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("back-button")));
         driver.findElement(By.id("back-button")).click();
@@ -356,9 +382,9 @@ public class Main {
         wait = new WebDriverWait(driver, 30);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("(//button[@data-testid=\"chooserContinue\"])[2]")));
         driver.findElement(By.xpath("(//button[@data-testid=\"chooserContinue\"])[2]")).click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@aria-label='"+itemName+"']")));
-        //This xpath is working for Superb Theme only for now. Will create Xpath for Superb List view if needed
-        driver.findElement(By.xpath("//div[@aria-label='"+itemName+"']")).click();
+        //h5 is being used for Superb List View & h4 is being used for Superb
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h4[normalize-space()='"+itemName+"']")));
+        driver.findElement(By.xpath("//h4[normalize-space()='"+itemName+"']")).click();
         JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript("window.scrollBy(0,2000)", "");
         driver.findElement(By.id("message")).sendKeys("Test Item Comment");
@@ -523,13 +549,15 @@ public class Main {
         driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
 
         checkSavedOrNew("4242424242424242", loggedIn);
+
         restartOrderWithData(loggedIn);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='pl-1']")));
         String orderIWithHash = driver.findElement(By.xpath("//span[@class='pl-1']")).getText();
         String OrderID = orderIWithHash.replace("#", "");
         System.out.println("TC_06: PASS - Order placed by Logged In User.");
         System.out.println("TC_20: PASS - Payment Gateway is working for a Single Location");
-        // Check Transaction only in either Guest/Login for now. I will make it dynamic later to check
+
+        // Check Transaction only in either Guest/Login for now. I can make it dynamic later to check
         // if user is already logged in and skip the login process in such case
        // checkTransactionID(OrderID);
     }
@@ -573,15 +601,17 @@ public class Main {
         driver.findElement(By.xpath("//input[@data-testid=\"paymentMode0\"]")).click();
         System.out.println("TC_32: Cash on Delivery Payment wih Gateway");
         driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
-        restartOrderWithData(loggedIn);
+        pageBackPostOrder();
+        createCart("First Location","Mama-Mia");
+        browserBackPostOrder();
         System.out.println("TC_12: PASS - Payment Successful by a New Card");
         System.out.println("TC_20: PASS - Payment Gateway is working for a Single Location");
     }
 
     public static void main(String[] args) throws InterruptedException {
         invokeBrowser();
-        //guestOrder();
-        loginOrder();
+        guestOrder();
+        //loginOrder();
 
     }
 }
