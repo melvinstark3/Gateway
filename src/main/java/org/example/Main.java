@@ -592,7 +592,7 @@ public class Main {
         JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript("window.scrollBy(0,2000)", "");
         //driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode0\"]")));
         driver.findElement(By.xpath("//textarea[@placeholder='Note here...']")).sendKeys("Test Order Comment");
         // Stale Element Exception if Trying Implicit Wait
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode0\"]")));
@@ -603,6 +603,11 @@ public class Main {
         driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
         pageBackPostOrder();
         createCart("First Location","Mama-Mia");
+        js.executeScript("window.scrollBy(0,2000)", "");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
+        driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
+        driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
+        checkSavedOrNew("4242424242424242",loggedIn);
         browserBackPostOrder();
         System.out.println("TC_12: PASS - Payment Successful by a New Card");
         System.out.println("TC_20: PASS - Payment Gateway is working for a Single Location");
@@ -611,7 +616,7 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         invokeBrowser();
         guestOrder();
-        //loginOrder();
+        loginOrder();
 
     }
 }
