@@ -26,14 +26,16 @@ public class guestOrder extends Main{
         JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript("window.scrollBy(0,2000)", "");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
+        driver.findElement(By.xpath("//textarea[@placeholder='Note here...']")).sendKeys("Test Order Comment");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
         System.out.print("TC_07: For Guest Order: ");
+        //Select Payment method (paymentMode0 = COD, paymentMode1=Online)
+        driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
+        driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
     }
 
     public static void main(String[] args) throws InterruptedException {
         invokeBrowser();
         orderFlow();
-        //Select Payment method (paymentMode0 = COD, paymentMode1=Online)
-        driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
-        driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
     }
 }
