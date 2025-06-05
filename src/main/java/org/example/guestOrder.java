@@ -8,10 +8,12 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class guestOrder extends Main{
 
     public static void orderFlow() throws InterruptedException {
+        boolean loggedIn = false;
         wait = new WebDriverWait(driver, 30);
         driver.navigate().to("https://gateway.demo-ordering.online/");
         driver.findElement(By.xpath("//button[@data-testid=\"modeSelect2\"]")).click();
-        createCart("First Location");
+        createCart("First Location","Mama-Mia");
+        System.out.println("Entering Customer Details");
         driver.findElement(By.xpath("//input[@data-testid=\"first_name\"]")).sendKeys("Test First Name");
         driver.findElement(By.xpath("//input[@data-testid=\"last_name\"]")).sendKeys("Test Last Name");
         driver.findElement(By.xpath("//input[@data-testid=\"phone\"]")).sendKeys("Test number");
@@ -24,7 +26,6 @@ public class guestOrder extends Main{
         JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript("window.scrollBy(0,2000)", "");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
-        driver.findElement(By.xpath("//input[@data-testid=\"paymentMode0\"]")).click();
         System.out.print("TC_07: For Guest Order: ");
     }
 

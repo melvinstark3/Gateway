@@ -16,7 +16,7 @@ public abstract class loginOrder extends Main{
         driver.findElement(By.xpath("//button[@data-testid=\"login\"]")).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@data-testid=\"modeSelect2\"]")));
         driver.findElement(By.xpath("//button[@data-testid=\"modeSelect2\"]")).click();
-        createCart("First Location");
+        createCart("First Location","Mama-Mia");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//textarea[@placeholder='Note here...']")));
         driver.findElement(By.xpath("//textarea[@placeholder='Note here...']")).sendKeys("Test Order Comment");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));

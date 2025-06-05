@@ -20,7 +20,7 @@ public class savedCardPayment extends Main {
         driver.findElement(By.xpath("//button[@data-testid=\"login\"]")).click();
         Thread.sleep(3000);
         driver.findElement(By.xpath("//button[@data-testid=\"modeSelect2\"]")).click();
-        createCart("First Location");
+        createCart("First Location","Mama-Mia");
         wait = new WebDriverWait(driver, 30);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
         //Select Payment method (paymentMode0 = 1st - COD , paymentMode1 = 2nd - Online)
