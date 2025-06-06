@@ -13,7 +13,6 @@ public class switchToMainContent extends browserSetup{
         } catch (NoSuchWindowException e) {
             System.out.println("Payment popup window closed automatically. Continuing with the main window.");
         }
-        //Sleep removed as Method is not being used
     }
 
 }
