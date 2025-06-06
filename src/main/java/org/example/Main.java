@@ -7,6 +7,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -207,6 +208,7 @@ public class Main {
     }
 
     public static void pageBackPostOrder() {
+        wait = new WebDriverWait(driver, 30);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[@aria-label=\"Back To Home\"]")));
         driver.findElement(By.xpath("//a[@aria-label=\"Back To Home\"]")).click();
         try {
@@ -220,6 +222,7 @@ public class Main {
     }
 
     public static void browserBackPostOrder() {
+        wait = new WebDriverWait(driver, 30);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[@aria-label=\"Back To Home\"]")));
         driver.navigate().back();
         try {
@@ -233,6 +236,7 @@ public class Main {
     }
 
     public static void paymentPageCancellation() throws InterruptedException {
+        wait = new WebDriverWait(driver, 30);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("back-button")));
         driver.findElement(By.id("back-button")).click();
         try {
@@ -387,6 +391,7 @@ public class Main {
         driver.findElement(By.xpath("//h4[normalize-space()='"+itemName+"']")).click();
         JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript("window.scrollBy(0,2000)", "");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("message")));
         driver.findElement(By.id("message")).sendKeys("Test Item Comment");
         driver.findElement(By.xpath("//button[@data-testid=\"addToCart\"]")).click();
         driver.findElement(By.xpath("//a[@id=\"cart-header\"]")).click();
@@ -596,11 +601,11 @@ public class Main {
         driver.findElement(By.xpath("//textarea[@placeholder='Note here...']")).sendKeys("Test Order Comment");
         // Stale Element Exception if Trying Implicit Wait
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode0\"]")));
-        System.out.print("TC_07: For Guest Order: ");
+        System.out.println("TC_07: For Guest Order: ");
         //Select Payment method (paymentMode0 = COD, paymentMode1=Online)
         driver.findElement(By.xpath("//input[@data-testid=\"paymentMode0\"]")).click();
-        System.out.println("TC_32: Cash on Delivery Payment wih Gateway");
         driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
+        System.out.println("TC_32: Cash on Delivery Payment wih Gateway");
         pageBackPostOrder();
         createCart("First Location","Mama-Mia");
         js.executeScript("window.scrollBy(0,2000)", "");
@@ -615,8 +620,14 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
         invokeBrowser();
+        LocalTime myObj = LocalTime.now();
+        System.out.println(myObj);
         guestOrder();
+        quitBrowser();
+        invokeBrowser();
         loginOrder();
-
+        LocalTime myObjb = LocalTime.now();
+        System.out.println(myObjb);
+        quitBrowser();
     }
 }
