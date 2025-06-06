@@ -1,2 +1,4 @@
-package org.example;public class invokeBrowser {
+package org.example;
+
+public class invokeBrowser {
 }
