@@ -32,6 +32,7 @@ public class createCart extends browserSetup{
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("message")));
         driver.findElement(By.id("message")).sendKeys("Test Item Comment");
         driver.findElement(By.xpath("//button[@data-testid=\"addToCart\"]")).click();
+        js.executeScript("window.scrollBy(0,100)", "");
         driver.findElement(By.xpath("//a[@id=\"cart-header\"]")).click();
         driver.findElement(By.xpath("//button[@data-testid=\"goToCheckout_desktop\"]")).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@aria-label=\"Select Payment Methods\"]")));
