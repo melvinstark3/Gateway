@@ -19,10 +19,10 @@ public class loginOrder extends browserSetup{
         driver.findElement(By.xpath("//button[@data-testid=\"login\"]")).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@data-testid=\"modeSelect2\"]")));
         driver.findElement(By.xpath("//button[@data-testid=\"modeSelect2\"]")).click();
+        System.out.print("Creating Cart");
         new createCart("First Location","Mama-Mia");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//textarea[@placeholder='Note here...']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
         driver.findElement(By.xpath("//textarea[@placeholder='Note here...']")).sendKeys("Test Order Comment");
-        wait = new WebDriverWait(driver, 30);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
         //Select Payment method (paymentMode0 = 1st - COD , paymentMode1 = 2nd - Online)
         driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
