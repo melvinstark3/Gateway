@@ -16,7 +16,7 @@ public class browserBackPostOrder extends browserSetup{
         driver.navigate().back();
         try {
             String pageBackURL = driver.getCurrentUrl();
-            if (Objects.equals(pageBackURL, "https://gateway.demo-ordering.online/en/order/selector")){
+            if (Objects.equals(pageBackURL, readProperty("BrowserBackPostOrderURL"))){
                 System.out.println("TC 18: Pass: User is redirected to Selector page");
             }
         } catch (NoSuchElementException | TimeoutException e) {
