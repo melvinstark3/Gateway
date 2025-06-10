@@ -10,7 +10,7 @@ import java.util.Set;
 public class checkTransactionID extends browserSetup{
 
     public checkTransactionID(String OrderID) throws InterruptedException {
-        String DashboardUrl = "https://demo.onlineorderalert.com/en";
+        String DashboardUrl = readProperty("BackendURL");
         ((JavascriptExecutor) driver).executeScript("window.open('" + DashboardUrl + "', '_blank');");
         wait = new WebDriverWait(driver, 30);
         wait.until(ExpectedConditions.numberOfWindowsToBe(2));
@@ -24,15 +24,15 @@ public class checkTransactionID extends browserSetup{
             }
         }
         driver.switchTo().window(newTabHandle);
-        driver.findElement(By.id("edit-name")).sendKeys("test@restolabs.com");
-        driver.findElement(By.id("edit-pass")).sendKeys("test");
+        driver.findElement(By.id("edit-name")).sendKeys(readProperty("adminUsername"));
+        driver.findElement(By.id("edit-pass")).sendKeys(readProperty("adminPassword"));
         driver.findElement(By.id("edit-submit")).click();
         System.out.println("Attempting Backend Profile Login");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("edit-select-profile")));
 
         // This Code block is specifically for Support Executive accounts, When using a Specific Test Profile credentials, This isn't required.
         driver.findElement(By.id("edit-select-profile")).clear();
-        driver.findElement(By.id("edit-select-profile")).sendKeys("Gateway (1204445)");
+        driver.findElement(By.id("edit-select-profile")).sendKeys(readProperty("profileToMasquerade"));
         driver.findElement(By.id("edit-grant-access")).click();
         System.out.println("Granting Access to Test Profile");
         //Waiting to Grant Profile Access

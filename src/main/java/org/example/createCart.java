@@ -30,7 +30,7 @@ public class createCart extends browserSetup{
         JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript("window.scrollBy(0,2000)", "");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("message")));
-        driver.findElement(By.id("message")).sendKeys("Test Item Comment");
+        driver.findElement(By.id("message")).sendKeys(readProperty("itemComment"));
         driver.findElement(By.xpath("//button[@data-testid=\"addToCart\"]")).click();
         js.executeScript("window.scrollBy(0,100)", "");
         driver.findElement(By.xpath("//a[@id=\"cart-header\"]")).click();

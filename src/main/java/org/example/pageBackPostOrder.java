@@ -16,7 +16,7 @@ public class pageBackPostOrder extends browserSetup{
         driver.findElement(By.xpath("//a[@aria-label=\"Back To Home\"]")).click();
         try {
             String pageBackURL = driver.getCurrentUrl();
-            if (Objects.equals(pageBackURL, "https://gateway.demo-ordering.online/en/order/selector")){
+            if (Objects.equals(pageBackURL, readProperty("pageBackPostOrderURL"))){
                 System.out.println("TC 17: Pass: User is redirected to Selector page");
             }
         } catch (NoSuchElementException | TimeoutException e) {

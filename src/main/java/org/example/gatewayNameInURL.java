@@ -9,7 +9,7 @@ public class gatewayNameInURL extends browserSetup{
         String OriginalPaymentURL = driver.getCurrentUrl();
         String paymentURL = OriginalPaymentURL.toLowerCase();
         System.out.println("Payment URL is " + paymentURL);
-        if (paymentURL.contains("stripe") || paymentURL.contains("connect")) {
+        if (paymentURL.contains(readProperty("keyword1")) || paymentURL.contains(readProperty("keyword2"))) {
             System.out.println("TC_30: PASS: URL Contains Gateway's Name it it");
         } else {
             System.out.println("TC_30: PASS: URL doesn't Contain Gateway's Name it it");

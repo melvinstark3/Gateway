@@ -19,9 +19,9 @@ public class newCardPayment extends browserSetup{
         driver.switchTo().frame(stripeIframe);
         driver.findElement(By.xpath("//div[@class=\"CardNumberField CardNumberField--ltr\"]")).sendKeys("4242424242424242");
         driver.findElement(By.name("cardnumber")).sendKeys(cardNumber);
-        driver.findElement(By.name("exp-date")).sendKeys("04/30");
-        driver.findElement(By.name("cvc")).sendKeys("111");
-        driver.findElement(By.name("postal")).sendKeys("10001");
+        driver.findElement(By.name("exp-date")).sendKeys(readProperty("expiry"));
+        driver.findElement(By.name("cvc")).sendKeys(readProperty("cvv"));
+        driver.findElement(By.name("postal")).sendKeys(readProperty("postalCode"));
         driver.switchTo().defaultContent();
         driver.findElement(By.id("submit-button")).click();
         System.out.println("Proceeding Payment with New Card");
