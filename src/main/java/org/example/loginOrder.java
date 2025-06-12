@@ -33,11 +33,12 @@ public class loginOrder extends browserSetup{
         new gatewayNameInURL();
         System.out.println("Checking Hypertext Protocol for Payment Page");
         new checkHttps();
-
+        new paymentNavigation();
+        new sharedURLPayment();
         driver.navigate().to(readProperty("loginURL"));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@data-testid=\"modeSelect2\"]")));
         driver.findElement(By.xpath("//button[@data-testid=\"modeSelect2\"]")).click();
-        String locationXpath = "//h5[normalize-space()='" + "First Location" + "']";
+        String locationXpath = "//h5[normalize-space()='" + readProperty("loginLocation") + "']";
         driver.findElement(By.xpath(locationXpath)).click();
         try {
             wait = new WebDriverWait(driver, 2);
