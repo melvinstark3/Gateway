@@ -8,12 +8,13 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class paymentNavigation extends browserSetup{
 
-    public paymentNavigation() throws InterruptedException {
+    public paymentNavigation(){
+        wait = new WebDriverWait(driver, 30);
         driver.navigate().to("https://gateway.demo-ordering.online/");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@data-testid=\"modeSelect2\"]")));
         driver.findElement(By.xpath("//button[@data-testid=\"modeSelect2\"]")).click();
 
-        String locationXpath = "//h5[normalize-space()='" + "First Location" + "']";
+        String locationXpath = "//h5[normalize-space()='" + readProperty("loginLocation") + "']";
         driver.findElement(By.xpath(locationXpath)).click();
         try {
             wait = new WebDriverWait(driver, 2);
@@ -25,10 +26,12 @@ public class paymentNavigation extends browserSetup{
         }
         driver.findElement(By.xpath("(//button[@data-testid=\"chooserContinue\"])[2]")).click();
         wait = new WebDriverWait(driver, 30);
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("subCategory1204469")));
-        driver.findElement(By.id("subCategory1204469")).click();
-        //This xpath is working for Superb Theme only for now. Will create Xpath for Superb List view if needed
-        driver.findElement(By.xpath("//div[@aria-label=\"Mozzarella Sticks\"]")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[normalize-space()='"+readProperty("loginSecondItemCategory")+"']")));
+        driver.findElement(By.xpath("//span[normalize-space()='"+readProperty("loginSecondItemCategory")+"']")).click();
+        //h5 is being used for Superb List View & h4 is being used for Superb
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h4[normalize-space()='"+readProperty("loginSecondItem")+"']")));
+        driver.findElement(By.xpath("//h4[normalize-space()='"+readProperty("loginSecondItem")+"']")).click();
+
         driver.findElement(By.xpath("//a[@id=\"cart-header\"]")).click();
         driver.findElement(By.xpath("//button[@data-testid=\"goToCheckout_desktop\"]")).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
