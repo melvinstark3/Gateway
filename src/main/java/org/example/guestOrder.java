@@ -2,6 +2,8 @@ package org.example;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -53,6 +55,17 @@ public class guestOrder extends browserSetup {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
         String checkoutOrderTotal = driver.findElement(By.xpath("//h5[@data-testid=\"orderTotal\"]")).getText();
         driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
+        try{
+            if (driver.findElement(By.id("policy")).isEnabled()) {
+                System.out.println("Privacy Policy and Terms & Conditions are Already Accepted");
+            } else {
+                driver.findElement(By.id("policy")).click();
+                System.out.println("Privacy Policy and Terms & Conditions Accepted"); // As per your requirement
+            }
+        }
+        catch (NoSuchElementException | TimeoutException e){
+            System.out.println("Privacy Policy and Terms and Conditions Checkbox is Not Displayed");
+        }
         driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
         new matchAmount(checkoutOrderTotal);
         new checkSavedOrNew(readProperty("guestNewCardNumber"),loggedIn);
