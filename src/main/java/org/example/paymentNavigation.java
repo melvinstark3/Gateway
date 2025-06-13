@@ -37,6 +37,17 @@ public class paymentNavigation extends browserSetup{
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
 
         driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
+        try{
+            if (driver.findElement(By.id("policy")).isSelected()) {
+                System.out.println("Privacy Policy and Terms & Conditions are Already Accepted");
+            } else {
+                driver.findElement(By.id("policy")).click();
+                System.out.println("Privacy Policy and Terms & Conditions Accepted"); // As per your requirement
+            }
+        }
+        catch (NoSuchElementException | TimeoutException e){
+            System.out.println("Privacy Policy and Terms and Conditions Checkbox is Not Displayed");
+        }
         driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("back-button")));
     }
