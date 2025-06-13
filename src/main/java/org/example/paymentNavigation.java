@@ -1,6 +1,7 @@
 package org.example;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -31,11 +32,11 @@ public class paymentNavigation extends browserSetup{
         //h5 is being used for Superb List View & h4 is being used for Superb
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h4[normalize-space()='"+readProperty("loginSecondItem")+"']")));
         driver.findElement(By.xpath("//h4[normalize-space()='"+readProperty("loginSecondItem")+"']")).click();
-
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("window.scrollBy(0,100)", "");
         driver.findElement(By.xpath("//a[@id=\"cart-header\"]")).click();
         driver.findElement(By.xpath("//button[@data-testid=\"goToCheckout_desktop\"]")).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
-
         driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
         try{
             if (driver.findElement(By.id("policy")).isSelected()) {
