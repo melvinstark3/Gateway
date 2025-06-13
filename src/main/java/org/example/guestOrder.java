@@ -45,6 +45,17 @@ public class guestOrder extends browserSetup {
         System.out.println("TC_07: For Guest Order: ");
         //Select Payment method (paymentMode0 = COD, paymentMode1=Online)
         driver.findElement(By.xpath("//input[@data-testid=\"paymentMode0\"]")).click();
+        try{
+            if (driver.findElement(By.id("policy")).isSelected()) {
+                System.out.println("Privacy Policy and Terms & Conditions are Already Accepted");
+            } else {
+                driver.findElement(By.id("policy")).click();
+                System.out.println("Privacy Policy and Terms & Conditions Accepted"); // As per your requirement
+            }
+        }
+        catch (NoSuchElementException | TimeoutException e){
+            System.out.println("Privacy Policy and Terms and Conditions Checkbox is Not Displayed");
+        }
         driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
         System.out.println("TC_32: Cash on Delivery Payment wih Gateway");
         new pageBackPostOrder();
@@ -56,7 +67,7 @@ public class guestOrder extends browserSetup {
         String checkoutOrderTotal = driver.findElement(By.xpath("//h5[@data-testid=\"orderTotal\"]")).getText();
         driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
         try{
-            if (driver.findElement(By.id("policy")).isEnabled()) {
+            if (driver.findElement(By.id("policy")).isSelected()) {
                 System.out.println("Privacy Policy and Terms & Conditions are Already Accepted");
             } else {
                 driver.findElement(By.id("policy")).click();

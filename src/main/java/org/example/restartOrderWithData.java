@@ -14,7 +14,7 @@ public class restartOrderWithData extends browserSetup{
         new createCart(readProperty("restartOrderLocation"),readProperty("restartOrderItem"));
         driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
         try{
-            if (driver.findElement(By.id("policy")).isEnabled()) {
+            if (driver.findElement(By.id("policy")).isSelected()) {
                 System.out.println("Privacy Policy and Terms & Conditions are Already Accepted");
             } else {
                 driver.findElement(By.id("policy")).click();

@@ -62,7 +62,7 @@ public class loginOrder extends browserSetup{
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
         driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
         try{
-            if (driver.findElement(By.id("policy")).isEnabled()) {
+            if (driver.findElement(By.id("policy")).isSelected()) {
                 System.out.println("Privacy Policy and Terms & Conditions are Already Accepted");
             } else {
                 driver.findElement(By.id("policy")).click();
