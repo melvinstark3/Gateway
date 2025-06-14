@@ -26,7 +26,7 @@ public class paymentNavigation extends browserSetup{
             System.out.println("Continuing to Menu");
         }
         driver.findElement(By.xpath("(//button[@data-testid=\"chooserContinue\"])[2]")).click();
-        wait = new WebDriverWait(driver, 30);
+        wait = new WebDriverWait(driver, 20);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[normalize-space()='"+readProperty("loginSecondItemCategory")+"']")));
         driver.findElement(By.xpath("//span[normalize-space()='"+readProperty("loginSecondItemCategory")+"']")).click();
         //h5 is being used for Superb List View & h4 is being used for Superb
@@ -34,8 +34,14 @@ public class paymentNavigation extends browserSetup{
         driver.findElement(By.xpath("//h4[normalize-space()='"+readProperty("loginSecondItem")+"']")).click();
         JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript("window.scrollBy(0,100)", "");
-        driver.findElement(By.xpath("//a[@id=\"cart-header\"]")).click();
-        driver.findElement(By.xpath("//button[@data-testid=\"goToCheckout_desktop\"]")).click();
+        try{
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@data-testid=\"goToCheckout_desktop\"]")));
+            driver.findElement(By.xpath("//button[@data-testid=\"goToCheckout_desktop\"]")).click();
+        }
+        catch (NoSuchElementException | TimeoutException e){
+            driver.findElement(By.xpath("//a[@id=\"cart-header\"]")).click();
+            driver.findElement(By.xpath("//button[@data-testid=\"goToCheckout_desktop\"]")).click();
+        }
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
         driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
         try{
