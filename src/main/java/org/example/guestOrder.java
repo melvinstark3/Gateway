@@ -25,7 +25,7 @@ public class guestOrder extends browserSetup {
 //        try {
 //            //try with Details Validation First, If found stale, Edit button is tried
 //            wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//span[@class='cursor-pointer text-red-600 ng-star-inserted']")));
-        Thread.sleep(5000);
+        Thread.sleep(7000);
         driver.findElement(By.xpath("//span[@class='cursor-pointer text-red-600 ng-star-inserted']")).click();
 //        }
 //        catch (StaleElementReferenceException e){
