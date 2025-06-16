@@ -11,7 +11,7 @@ public class paymentNavigation extends browserSetup{
 
     public paymentNavigation(){
         wait = new WebDriverWait(driver, 30);
-        driver.navigate().to("https://gateway.demo-ordering.online/");
+        driver.navigate().to(readProperty("paymentNavigationURL"));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@data-testid=\"modeSelect2\"]")));
         driver.findElement(By.xpath("//button[@data-testid=\"modeSelect2\"]")).click();
 
@@ -49,7 +49,7 @@ public class paymentNavigation extends browserSetup{
                 System.out.println("Privacy Policy and Terms & Conditions are Already Accepted");
             } else {
                 driver.findElement(By.id("policy")).click();
-                System.out.println("Privacy Policy and Terms & Conditions Accepted"); // As per your requirement
+                System.out.println("Privacy Policy and Terms & Conditions Accepted");
             }
         }
         catch (NoSuchElementException | TimeoutException e){
