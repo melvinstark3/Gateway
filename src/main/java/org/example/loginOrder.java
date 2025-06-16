@@ -26,6 +26,17 @@ public class loginOrder extends browserSetup{
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
         //Select Payment method (paymentMode0 = 1st - COD , paymentMode1 = 2nd - Online)
         driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
+        try{
+            if (driver.findElement(By.id("policy")).isSelected()) {
+                System.out.println("Privacy Policy and Terms & Conditions are Already Accepted");
+            } else {
+                driver.findElement(By.id("policy")).click();
+                System.out.println("Privacy Policy and Terms & Conditions Accepted"); // As per your requirement
+            }
+        }
+        catch (NoSuchElementException | TimeoutException e){
+            System.out.println("Privacy Policy and Terms and Conditions Checkbox is Not Displayed");
+        }
         driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
         System.out.print("For Logged In Order: ");
         new paymentPageCancellation();
@@ -34,7 +45,6 @@ public class loginOrder extends browserSetup{
         System.out.println("Checking Hypertext Protocol for Payment Page");
         new checkHttps();
         new paymentNavigation();
-        new sharedURLPayment();
         driver.navigate().to(readProperty("loginURL"));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@data-testid=\"modeSelect2\"]")));
         driver.findElement(By.xpath("//button[@data-testid=\"modeSelect2\"]")).click();
@@ -66,7 +76,7 @@ public class loginOrder extends browserSetup{
                 System.out.println("Privacy Policy and Terms & Conditions are Already Accepted");
             } else {
                 driver.findElement(By.id("policy")).click();
-                System.out.println("Privacy Policy and Terms & Conditions Accepted"); // As per your requirement
+                System.out.println("Privacy Policy and Terms & Conditions Accepted");
             }
         }
         catch (NoSuchElementException | TimeoutException e){

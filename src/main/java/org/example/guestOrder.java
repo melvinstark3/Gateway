@@ -50,10 +50,10 @@ public class guestOrder extends browserSetup {
                 System.out.println("Privacy Policy and Terms & Conditions are Already Accepted");
             } else {
                 driver.findElement(By.id("policy")).click();
-                System.out.println("Privacy Policy and Terms & Conditions Accepted"); // As per your requirement
+                System.out.println("Privacy Policy and Terms & Conditions Accepted");
             }
         }
-        catch (NoSuchElementException | TimeoutException e){
+        catch (NoSuchElementException | TimeoutException e) {
             System.out.println("Privacy Policy and Terms and Conditions Checkbox is Not Displayed");
         }
         driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
@@ -71,10 +71,10 @@ public class guestOrder extends browserSetup {
                 System.out.println("Privacy Policy and Terms & Conditions are Already Accepted");
             } else {
                 driver.findElement(By.id("policy")).click();
-                System.out.println("Privacy Policy and Terms & Conditions Accepted"); // As per your requirement
+                System.out.println("Privacy Policy and Terms & Conditions Accepted");
             }
         }
-        catch (NoSuchElementException | TimeoutException e){
+        catch (NoSuchElementException | TimeoutException e) {
             System.out.println("Privacy Policy and Terms and Conditions Checkbox is Not Displayed");
         }
         driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
@@ -85,5 +85,8 @@ public class guestOrder extends browserSetup {
         System.out.println("TC_20: PASS - Payment Gateway is working for a Single Location");
         new paymentNavigation();
         new spamPay();
+        Thread.sleep(3000);
+        new paymentNavigation();
+        new sharedURLPayment();
     }
 }
