@@ -12,7 +12,7 @@ public class guestOrder extends browserSetup {
         boolean loggedIn = false;
         wait = new WebDriverWait(driver, 30);
         driver.navigate().to(readProperty("GuestURL"));
-        driver.findElement(By.xpath("//button[@data-testid=\"modeSelect2\"]")).click();
+        driver.findElement(By.xpath("//button[@aria-label=\"Pick Up\"]")).click();
         new createCart(readProperty("GuestLocation"),readProperty("guestOrderItem"));
         System.out.println("Entering Customer Details");
         driver.findElement(By.xpath("//input[@data-testid=\"first_name\"]")).sendKeys(readProperty("GuestFirstName"));
