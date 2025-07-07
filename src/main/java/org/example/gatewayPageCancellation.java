@@ -13,8 +13,8 @@ public class gatewayPageCancellation extends browserSetup{
 
     public gatewayPageCancellation() throws InterruptedException {
         driver.navigate().to("https://gateway.demo-ordering.online/");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@data-testid=\"modeSelect2\"]")));
-        driver.findElement(By.xpath("//button[@data-testid=\"modeSelect2\"]")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@aria-label=\"Pick Up\"]")));
+        driver.findElement(By.xpath("//button[@aria-label=\"Pick Up\"]")).click();
 
         String locationXpath = "//h5[normalize-space()='" + "First Location" + "']";
         driver.findElement(By.xpath(locationXpath)).click();

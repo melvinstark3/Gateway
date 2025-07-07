@@ -12,8 +12,8 @@ public class paymentNavigation extends browserSetup{
     public paymentNavigation(){
         wait = new WebDriverWait(driver, 30);
         driver.navigate().to(readProperty("paymentNavigationURL"));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@data-testid=\"modeSelect2\"]")));
-        driver.findElement(By.xpath("//button[@data-testid=\"modeSelect2\"]")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@aria-label=\"Pick Up\"]")));
+        driver.findElement(By.xpath("//button[@aria-label=\"Pick Up\"]")).click();
 
         String locationXpath = "//h5[normalize-space()='" + readProperty("loginLocation") + "']";
         driver.findElement(By.xpath(locationXpath)).click();

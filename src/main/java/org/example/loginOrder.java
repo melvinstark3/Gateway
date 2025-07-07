@@ -17,8 +17,8 @@ public class loginOrder extends browserSetup{
         driver.findElement(By.id("email")).sendKeys(readProperty("loginUserEmail"));
         driver.findElement(By.id("password")).sendKeys(readProperty("loginUserPassword"));
         driver.findElement(By.xpath("//button[@data-testid=\"login\"]")).click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@data-testid=\"modeSelect2\"]")));
-        driver.findElement(By.xpath("//button[@data-testid=\"modeSelect2\"]")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@aria-label=\"Pick Up\"]")));
+        driver.findElement(By.xpath("//button[@aria-label=\"Pick Up\"]")).click();
         System.out.print("Creating Cart");
         new createCart(readProperty("loginLocation"),readProperty("loginOrderItem"));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
@@ -46,8 +46,8 @@ public class loginOrder extends browserSetup{
         new checkHttps();
         new paymentNavigation();
         driver.navigate().to(readProperty("loginURL"));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@data-testid=\"modeSelect2\"]")));
-        driver.findElement(By.xpath("//button[@data-testid=\"modeSelect2\"]")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@aria-label=\"Pick Up\"]")));
+        driver.findElement(By.xpath("//button[@aria-label=\"Pick Up\"]")).click();
         String locationXpath = "//h5[normalize-space()='" + readProperty("loginLocation") + "']";
         driver.findElement(By.xpath(locationXpath)).click();
         try {
