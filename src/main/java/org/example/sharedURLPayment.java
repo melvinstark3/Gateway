@@ -14,7 +14,7 @@ public class sharedURLPayment extends browserSetup{
         driver.get(paymentURL);
         try {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("back-button"))).isDisplayed();
-            if (Objects.equals(readProperty("hostedGateway"), "yes")){
+            if (Objects.equals(readProperty("tokenized"), "yes")){
                 new checkSavedOrNew(readProperty("guestNewCardNumber"),true);
                 try {
                     wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='pl-1']")));
