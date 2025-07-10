@@ -1,6 +1,7 @@
 package org.example;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -9,9 +10,10 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class loginOrder extends browserSetup{
 
     public loginOrder() throws InterruptedException {
+        wait = new WebDriverWait(driver, 30);
+        JavascriptExecutor js = (JavascriptExecutor) driver;
         boolean loggedIn = true;
         driver.navigate().to(readProperty("loginURL"));
-        wait = new WebDriverWait(driver, 30);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("guest_user")));
         driver.findElement(By.id("guest_user")).click();
         driver.findElement(By.id("email")).sendKeys(readProperty("loginUserEmail"));
@@ -20,12 +22,13 @@ public class loginOrder extends browserSetup{
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@aria-label=\"Pick Up\"]")));
         driver.findElement(By.xpath("//button[@aria-label=\"Pick Up\"]")).click();
         System.out.print("Creating Cart");
-        new createCart(readProperty("loginLocation"),readProperty("loginOrderItem"));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
+        new createCart(readProperty("loginLocation"),readProperty("loginOrderItem"),loggedIn);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\""+readProperty("OnlinePaymentMode")+"\"]")));
         driver.findElement(By.xpath("//textarea[@placeholder='Note here...']")).sendKeys(readProperty("loginOrderComment"));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
-        //Select Payment method (paymentMode0 = 1st - COD , paymentMode1 = 2nd - Online)
-        driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\""+readProperty("OnlinePaymentMode")+"\"]")));
+        //The Modes number are auto assigned as per title names of payment modes
+        //Thus edit the payment mode number as per the alphabetic order or your preferred method
+        driver.findElement(By.xpath("//input[@data-testid=\""+readProperty("OnlinePaymentMode")+"\"]")).click();
         try{
             if (driver.findElement(By.id("policy")).isSelected()) {
                 System.out.println("Privacy Policy and Terms & Conditions are Already Accepted");
@@ -51,17 +54,18 @@ public class loginOrder extends browserSetup{
         String locationXpath = "//h5[normalize-space()='" + readProperty("loginLocation") + "']";
         driver.findElement(By.xpath(locationXpath)).click();
         try {
-            wait = new WebDriverWait(driver, 2);
+            wait = new WebDriverWait(driver, 3);
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@data-testid=\"Yes\"]")));
             //For Some reason even after Completed, We get Cart reset Popup, Handle it with Yes for now.
             driver.findElement(By.xpath("//button[@data-testid=\"Yes\"]")).click();
         } catch (NoSuchElementException | TimeoutException e) {
             System.out.println("Continuing to Menu");
         }
+        wait = new WebDriverWait(driver, 30);
+        js.executeScript("window.scrollBy(0,2000)", "");
         driver.findElement(By.xpath("(//button[@data-testid=\"chooserContinue\"])[2]")).click();
 
         //This could be optimized by directly choosing Cart, if Cart inconsistency Issues are solved by Dev Team
-        wait = new WebDriverWait(driver, 30);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[normalize-space()='"+readProperty("loginSecondItemCategory")+"']")));
         driver.findElement(By.xpath("//span[normalize-space()='"+readProperty("loginSecondItemCategory")+"']")).click();
         //h5 is being used for Superb List View & h4 is being used for Superb
@@ -69,8 +73,8 @@ public class loginOrder extends browserSetup{
         driver.findElement(By.xpath("//h4[normalize-space()='"+readProperty("loginSecondItem")+"']")).click();
         driver.findElement(By.xpath("//a[@id=\"cart-header\"]")).click();
         driver.findElement(By.xpath("//button[@data-testid=\"goToCheckout_desktop\"]")).click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
-        driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\""+readProperty("OnlinePaymentMode")+"\"]")));
+        driver.findElement(By.xpath("//input[@data-testid=\""+readProperty("OnlinePaymentMode")+"\"]")).click();
         try{
             if (driver.findElement(By.id("policy")).isSelected()) {
                 System.out.println("Privacy Policy and Terms & Conditions are Already Accepted");

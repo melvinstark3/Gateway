@@ -12,7 +12,7 @@ import java.util.List;
 public class gatewayPageCancellation extends browserSetup{
 
     public gatewayPageCancellation() throws InterruptedException {
-        driver.navigate().to("https://gateway.demo-ordering.online/");
+        driver.navigate().to(readProperty("loginURL"));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@aria-label=\"Pick Up\"]")));
         driver.findElement(By.xpath("//button[@aria-label=\"Pick Up\"]")).click();
 
@@ -34,9 +34,9 @@ public class gatewayPageCancellation extends browserSetup{
         driver.findElement(By.xpath("//div[@aria-label=\"Mozzarella Sticks\"]")).click();
         driver.findElement(By.xpath("//a[@id=\"cart-header\"]")).click();
         driver.findElement(By.xpath("//button[@data-testid=\"goToCheckout_desktop\"]")).click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\""+readProperty("OnlinePaymentMode")+"\"]")));
 
-        driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
+        driver.findElement(By.xpath("//input[@data-testid=\""+readProperty("OnlinePaymentMode")+"\"]")).click();
         try{
             if (driver.findElement(By.id("policy")).isEnabled()) {
                 System.out.println("Privacy Policy and Terms & Conditions are Already Accepted");

@@ -42,8 +42,8 @@ public class paymentNavigation extends browserSetup{
             driver.findElement(By.xpath("//a[@id=\"cart-header\"]")).click();
             driver.findElement(By.xpath("//button[@data-testid=\"goToCheckout_desktop\"]")).click();
         }
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\"paymentMode1\"]")));
-        driver.findElement(By.xpath("//input[@data-testid=\"paymentMode1\"]")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\""+readProperty("OnlinePaymentMode")+"\"]")));
+        driver.findElement(By.xpath("//input[@data-testid=\""+readProperty("OnlinePaymentMode")+"\"]")).click();
         try{
             if (driver.findElement(By.id("policy")).isSelected()) {
                 System.out.println("Privacy Policy and Terms & Conditions are Already Accepted");

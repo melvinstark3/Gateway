@@ -22,7 +22,7 @@ public class browserSetup {
     public static String readProperty(String key) {
         Properties prop = new Properties();
         try {
-            FileInputStream fis = new FileInputStream("/Users/kartik/IdeaProjects/Payment/src/main/resources/config.properties");
+            FileInputStream fis = new FileInputStream("/Users/kartik/Desktop/Gateway/src/main/resources/config.properties");
             prop.load(fis);
         } catch (Exception e) {
             System.out.println(e.getMessage());
