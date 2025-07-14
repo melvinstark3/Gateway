@@ -100,9 +100,7 @@ public class loginOrder extends browserSetup{
         System.out.println("TC_06: PASS - Order placed by Logged In User.");
         System.out.println("TC_20: PASS - Payment Gateway is working for a Single Location");
 
-        // Check Transaction only in either Guest/Login for now. I can make it dynamic later to check
-        // if user is already logged in and skip the login process in such case
-        //new checkTransactionID(OrderID);
+        new checkTransactionID(OrderID);
     }
 
 }

@@ -36,5 +36,4 @@ public class checkSavedOrNew extends browserSetup{
             new newCardPayment(cardNumber);
         }
     }
-
 }

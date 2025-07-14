@@ -28,21 +28,11 @@ public class checkTransactionID extends browserSetup{
         driver.findElement(By.id("edit-pass")).sendKeys(readProperty("adminPassword"));
         driver.findElement(By.id("edit-submit")).click();
         System.out.println("Attempting Backend Profile Login");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("edit-select-profile")));
-
-        // This Code block is specifically for Support Executive accounts, When using a Specific Test Profile credentials, This isn't required.
-        driver.findElement(By.id("edit-select-profile")).clear();
-        driver.findElement(By.id("edit-select-profile")).sendKeys(readProperty("profileToMasquerade"));
-        driver.findElement(By.id("edit-grant-access")).click();
-        System.out.println("Granting Access to Test Profile");
-        //Waiting to Grant Profile Access
-        Thread.sleep(5000);
-        driver.navigate().to("https://demo.onlineorderalert.com/backend/support-executive-revoke-permission");
-        driver.findElement(By.xpath("//a[normalize-space()='Masquerade']")).click();
-        System.out.println("Masquerading Test Profile");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@data-tab=\"pending_orders\"]")));
         //Change the Tab if needed, as per Order Status. By Default We select pending orders for new orders
         driver.findElement(By.xpath("//button[@data-tab=\"pending_orders\"]")).click();
         //driver.findElement(By.xpath("//button[@data-tab=\"confirmed_orders\"]")).click();
+        System.out.println("Opening Order on Backend" + OrderID);
         driver.findElement(By.linkText(OrderID)).click();
 
         //try catch block for Item Comment
