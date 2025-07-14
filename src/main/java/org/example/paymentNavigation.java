@@ -9,37 +9,15 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class paymentNavigation extends browserSetup{
 
-    public paymentNavigation() throws InterruptedException {
+    public paymentNavigation(boolean loggedIn) throws InterruptedException {
         wait = new WebDriverWait(driver, 30);
-        driver.navigate().to(readProperty("paymentNavigationURL"));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@aria-label=\"Pick Up\"]")));
-        driver.findElement(By.xpath("//button[@aria-label=\"Pick Up\"]")).click();
-
-        String locationXpath = "//h5[normalize-space()='" + readProperty("loginLocation") + "']";
-        driver.findElement(By.xpath(locationXpath)).click();
-        try {
-            wait = new WebDriverWait(driver, 2);
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@data-testid=\"Yes\"]")));
-            //For Some reason even after Completed, We get Cart reset Popup, Handle it with Yes for now.
-            driver.findElement(By.xpath("//button[@data-testid=\"Yes\"]")).click();
-        } catch (NoSuchElementException | TimeoutException e) {
-            System.out.println("Continuing to Menu");
-        }
-        driver.findElement(By.xpath("(//button[@data-testid=\"chooserContinue\"])[2]")).click();
-        wait = new WebDriverWait(driver, 20);
-        //h5 is being used for Superb List View & h4 is being used for Superb
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h4[normalize-space()='"+readProperty("loginSecondItem")+"']")));
-        driver.findElement(By.xpath("//h4[normalize-space()='"+readProperty("loginSecondItem")+"']")).click();
         JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("window.scrollBy(0,100)", "");
-        try{
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@data-testid=\"goToCheckout_desktop\"]")));
-            driver.findElement(By.xpath("//button[@data-testid=\"goToCheckout_desktop\"]")).click();
-        }
-        catch (NoSuchElementException | TimeoutException e){
-            driver.findElement(By.xpath("//a[@id=\"cart-header\"]")).click();
-            driver.findElement(By.xpath("//button[@data-testid=\"goToCheckout_desktop\"]")).click();
-        }
+        driver.navigate().to(readProperty("paymentNavigationURL"));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@aria-label=\"Pick Up\"]"))).click();
+        new createCart(readProperty("loginLocation"),readProperty("loginSecondItem"),loggedIn);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h5[@data-testid=\"orderTotal\"]")));
+        js.executeScript("window.scrollBy(0,2000)", "");
+        driver.findElement(By.xpath("//textarea[@placeholder='Note here...']")).sendKeys("Test Order Comment");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\""+readProperty("OnlinePaymentMode")+"\"]")));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h5[@data-testid=\"orderTotal\"]")));
         Thread.sleep(5000);
@@ -51,15 +29,19 @@ public class paymentNavigation extends browserSetup{
                 System.out.println("Privacy Policy and Terms & Conditions Accepted");
             }
         }
-        catch (NoSuchElementException | TimeoutException e){
+        catch (NoSuchElementException | TimeoutException e) {
             System.out.println("Privacy Policy and Terms and Conditions Checkbox is Not Displayed");
         }
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h5[@data-testid=\"orderTotal\"]")));
         driver.findElement(By.xpath("//input[@data-testid=\""+readProperty("OnlinePaymentMode")+"\"]")).click();
-        String checkoutOrderTotal = driver.findElement(By.xpath("//h5[@data-testid=\"orderTotal\"]")).getText();
-        driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]"))).click();
         // There no Dynamic Xpath for the Saved Successfully Container hence using Thread.sleep
         Thread.sleep(5000);
+        try {
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("(//button[@data-testid=\"closeBillAddressDialog\"])[2]"))).click();
+        }catch (NoSuchElementException | TimeoutException e) {
+            System.out.println("Pre-Saved Billing Dialog wasn't Displayed. Proceeding to Gateway");
+        }
         wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[@data-testid=\"placeOrderStripe\"]"))).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("back-button")));
     }

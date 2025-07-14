@@ -85,10 +85,10 @@ public class guestOrder extends browserSetup {
         new browserBackPostOrder();
         System.out.println("TC_12: PASS - Payment Successful by a New Card");
         System.out.println("TC_20: PASS - Payment Gateway is working for a Single Location");
-        new paymentNavigation();
+        new paymentNavigation(loggedIn);
         new spamPay();
         Thread.sleep(3000);
-        new paymentNavigation();
+        new paymentNavigation(loggedIn);
         new sharedURLPayment();
     }
 }

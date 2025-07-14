@@ -53,44 +53,11 @@ public class loginOrder extends browserSetup{
         wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[@data-testid=\"placeOrderStripe\"]"))).click();
         System.out.print("For Logged In Order: ");
         new paymentPageCancellation();
-        new paymentNavigation();
+        new paymentNavigation(loggedIn);
         new gatewayNameInURL();
         System.out.println("Checking Hypertext Protocol for Payment Page");
         new checkHttps();
-        new paymentNavigation();
-        driver.navigate().to(readProperty("loginURL"));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@aria-label=\"Pick Up\"]")));
-        driver.findElement(By.xpath("//button[@aria-label=\"Pick Up\"]")).click();
-        new createCart(readProperty("loginLocation"),readProperty("loginSecondItem"),loggedIn);
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h5[@data-testid=\"orderTotal\"]")));
-        js.executeScript("window.scrollBy(0,2000)", "");
-        driver.findElement(By.xpath("//textarea[@placeholder='Note here...']")).sendKeys("Test Order Comment");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@data-testid=\""+readProperty("OnlinePaymentMode")+"\"]")));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h5[@data-testid=\"orderTotal\"]")));
-        Thread.sleep(5000);
-        try{
-            if (driver.findElement(By.id("policy")).isSelected()) {
-                System.out.println("Privacy Policy and Terms & Conditions are Already Accepted");
-            } else {
-                driver.findElement(By.id("policy")).click();
-                System.out.println("Privacy Policy and Terms & Conditions Accepted");
-            }
-        }
-        catch (NoSuchElementException | TimeoutException e) {
-            System.out.println("Privacy Policy and Terms and Conditions Checkbox is Not Displayed");
-        }
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h5[@data-testid=\"orderTotal\"]")));
-        driver.findElement(By.xpath("//input[@data-testid=\""+readProperty("OnlinePaymentMode")+"\"]")).click();
-        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]"))).click();
-        // There no Dynamic Xpath for the Saved Successfully Container hence using Thread.sleep
-        Thread.sleep(5000);
-        try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("(//button[@data-testid=\"closeBillAddressDialog\"])[2]"))).click();
-        }catch (NoSuchElementException | TimeoutException e) {
-            System.out.println("Pre-Saved Billing Dialog wasn't Displayed. Proceeding to Gateway");
-        }
-        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[@data-testid=\"placeOrderStripe\"]"))).click();
-
+        new paymentNavigation(loggedIn);
         new checkSavedOrNew(readProperty("loginNewCardNumber"), loggedIn);
 
         new restartOrderWithData(loggedIn);

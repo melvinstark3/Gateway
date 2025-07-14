@@ -9,8 +9,8 @@ import java.util.List;
 
 public class gatewayNavigation extends browserSetup{
 
-    public gatewayNavigation() throws InterruptedException {
-        new paymentNavigation();
+    public gatewayNavigation(boolean loggedIn) throws InterruptedException {
+        new paymentNavigation(loggedIn);
         try {
             List<WebElement> elements = driver.findElements(By.id("new-card"));
             if (!elements.isEmpty()) {

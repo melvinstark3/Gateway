@@ -41,7 +41,7 @@ public class createCart extends browserSetup{
         catch (NoSuchElementException | TimeoutException e){
             System.out.println("Adding non Customisable Item to the Cart.");
         }
-        js.executeScript("window.scrollBy(0,100)", "");
+        js.executeScript("window.scrollBy(0,10)", "");
         try{
             driver.findElement(By.xpath("//a[@id=\"cart-header\"]")).click();
         }
