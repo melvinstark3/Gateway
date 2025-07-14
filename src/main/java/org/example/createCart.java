@@ -12,6 +12,7 @@ public class createCart extends browserSetup{
     public createCart(String Location, String itemName, boolean loggedIn) throws InterruptedException {
         wait = new WebDriverWait(driver, 30);
         JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("window.scrollBy(0,2000)", "");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h5[normalize-space()='" + Location + "']"))).click();
         System.out.println("Selected Location : " + Location);
         try {
@@ -22,7 +23,6 @@ public class createCart extends browserSetup{
         } catch (NoSuchElementException | TimeoutException e) {
             System.out.println("Continuing to Menu");
         }
-        js.executeScript("window.scrollBy(0,2000)", "");
         wait = new WebDriverWait(driver, 30);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("(//button[@data-testid=\"chooserContinue\"])[2]")));
         driver.findElement(By.xpath("(//button[@data-testid=\"chooserContinue\"])[2]")).click();
@@ -31,11 +31,11 @@ public class createCart extends browserSetup{
         wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//h4[normalize-space()='"+itemName+"']")));
         driver.findElement(By.xpath("//h4[normalize-space()='"+itemName+"']")).click();
         Thread.sleep(3000);
-        js.executeScript("window.scrollBy(0,2000)", "");
         wait = new WebDriverWait(driver, 3);
         try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("message")));
-            driver.findElement(By.id("message")).sendKeys(readProperty("itemComment"));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@data-testid=\"addToCart\"]")));
+            js.executeScript("window.scrollBy(0,2000)", "");
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("message"))).sendKeys(readProperty("itemComment"));
             driver.findElement(By.xpath("//button[@data-testid=\"addToCart\"]")).click();
         }
         catch (NoSuchElementException | TimeoutException e){
