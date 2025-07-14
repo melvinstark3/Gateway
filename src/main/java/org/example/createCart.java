@@ -12,7 +12,6 @@ public class createCart extends browserSetup{
     public createCart(String Location, String itemName, boolean loggedIn) throws InterruptedException {
         wait = new WebDriverWait(driver, 30);
         JavascriptExecutor js = (JavascriptExecutor) driver;
-        String locationXpath = "//h5[normalize-space()='" + Location + "']";
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h5[normalize-space()='" + Location + "']"))).click();
         System.out.println("Selected Location : " + Location);
         try {
@@ -29,15 +28,28 @@ public class createCart extends browserSetup{
         driver.findElement(By.xpath("(//button[@data-testid=\"chooserContinue\"])[2]")).click();
         //h5 is being used for Superb List View & h4 is being used for Superb
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h4[normalize-space()='"+itemName+"']")));
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//h4[normalize-space()='"+itemName+"']")));
         driver.findElement(By.xpath("//h4[normalize-space()='"+itemName+"']")).click();
         Thread.sleep(3000);
         js.executeScript("window.scrollBy(0,2000)", "");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("message")));
-        driver.findElement(By.id("message")).sendKeys(readProperty("itemComment"));
-        driver.findElement(By.xpath("//button[@data-testid=\"addToCart\"]")).click();
+        wait = new WebDriverWait(driver, 3);
+        try {
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("message")));
+            driver.findElement(By.id("message")).sendKeys(readProperty("itemComment"));
+            driver.findElement(By.xpath("//button[@data-testid=\"addToCart\"]")).click();
+        }
+        catch (NoSuchElementException | TimeoutException e){
+            System.out.println("Adding non Customisable Item to the Cart.");
+        }
         js.executeScript("window.scrollBy(0,100)", "");
-        driver.findElement(By.xpath("//a[@id=\"cart-header\"]")).click();
+        try{
+            driver.findElement(By.xpath("//a[@id=\"cart-header\"]")).click();
+        }
+        catch (NoSuchElementException | TimeoutException e){
+            System.out.println("Cart Header Automatically Popped. Proceeding to Checkout");
+        }
         driver.findElement(By.xpath("//button[@data-testid=\"goToCheckout_desktop\"]")).click();
+        wait = new WebDriverWait(driver, 30);
         if (loggedIn) {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@aria-label=\"Select Payment Methods\"]")));
         }

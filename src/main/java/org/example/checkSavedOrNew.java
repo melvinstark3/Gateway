@@ -19,7 +19,7 @@ public class checkSavedOrNew extends browserSetup{
             if (!elements.isEmpty()) {
                 new savedCardPayment();
             } else {
-                new newCardPayment(cardNumber, loggedIn);
+                new newCardPayment(cardNumber);
             }
             //Wait for Order ID element
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='pl-1']")));
@@ -32,7 +32,8 @@ public class checkSavedOrNew extends browserSetup{
             } catch (NoSuchElementException | TimeoutException t) {
                 System.out.println("Trying First Fresh Card Payment");
             }
-            new newCardPayment(cardNumber, loggedIn);
+            wait = new WebDriverWait(driver, 30);
+            new newCardPayment(cardNumber);
         }
     }
 

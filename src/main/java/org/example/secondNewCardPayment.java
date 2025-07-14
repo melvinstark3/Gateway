@@ -17,7 +17,7 @@ public class secondNewCardPayment extends browserSetup{
             new deleteCard();
         }
         System.out.println("Attempting Payment for Order ID " + SecondCardPaymentOrderID);
-        new newCardPayment(cardNumber, loggedIn);
+        new newCardPayment(cardNumber);
         System.out.println("Proceeding Payment with Second New Card");
     }
 
