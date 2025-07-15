@@ -11,8 +11,9 @@ import java.util.Objects;
 public class browserBackPostOrder extends browserSetup{
 
     public browserBackPostOrder() {
-        wait = new WebDriverWait(driver, 30);
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[@aria-label=\"Back To Home\"]")));
+        wait = new WebDriverWait(driver, 60);
+        String restartOrderButtonXpath = "//div[@class='bg-white rounded-xl border border-app-gray-300']//span[@class='border-dashed text-sm font-semibold border px-2 py-0.5 rounded-lg cursor-pointer ml-2'][normalize-space()='Click here to start order again']";
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(restartOrderButtonXpath)));
         driver.navigate().back();
         try {
             String pageBackURL = driver.getCurrentUrl();
