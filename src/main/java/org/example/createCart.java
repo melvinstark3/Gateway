@@ -1,9 +1,6 @@
 package org.example;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -30,25 +27,28 @@ public class createCart extends browserSetup{
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h4[normalize-space()='"+itemName+"']")));
         wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//h4[normalize-space()='"+itemName+"']")));
         driver.findElement(By.xpath("//h4[normalize-space()='"+itemName+"']")).click();
-        Thread.sleep(3000);
         wait = new WebDriverWait(driver, 3);
         try {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@data-testid=\"addToCart\"]")));
             js.executeScript("window.scrollBy(0,2000)", "");
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("message"))).sendKeys(readProperty("itemComment"));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("message"))).clear();
+            driver.findElement(By.id("message")).sendKeys(readProperty("itemComment"));
             driver.findElement(By.xpath("//button[@data-testid=\"addToCart\"]")).click();
         }
         catch (NoSuchElementException | TimeoutException e){
             System.out.println("Adding non Customisable Item to the Cart.");
         }
         js.executeScript("window.scrollBy(0,10)", "");
-        try{
-            driver.findElement(By.xpath("//a[@id=\"cart-header\"]")).click();
+        try {
+            driver.findElement(By.xpath("//button[@data-testid=\"goToCheckout_desktop\"]")).click();
+            System.out.println("Cart Popup Appeared Automatically. Proceeding to Checkout");
         }
         catch (NoSuchElementException | TimeoutException e){
-            System.out.println("Cart Header Automatically Popped. Proceeding to Checkout");
+            driver.findElement(By.xpath("//a[@id=\"cart-header\"]")).click();
+            driver.findElement(By.xpath("//button[@data-testid=\"goToCheckout_desktop\"]")).click();
+            System.out.println("Proceeding to Checkout");
+
         }
-        driver.findElement(By.xpath("//button[@data-testid=\"goToCheckout_desktop\"]")).click();
         wait = new WebDriverWait(driver, 30);
         if (loggedIn) {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@aria-label=\"Select Payment Methods\"]")));
