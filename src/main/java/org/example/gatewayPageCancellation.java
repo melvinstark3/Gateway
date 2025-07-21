@@ -48,6 +48,7 @@ public class gatewayPageCancellation extends browserSetup{
         catch (NoSuchElementException | TimeoutException e){
             System.out.println("Privacy Policy and Terms and Conditions Checkbox is Not Displayed");
         }
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]"))).click();
         driver.findElement(By.xpath("(//button[@data-testid=\"placeOrder\"])[2]")).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("back-button")));
 
