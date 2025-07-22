@@ -7,7 +7,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.util.concurrent.TimeUnit;
 
 public class spamPay extends browserSetup{
-    public spamPay(){
+    public spamPay() throws InterruptedException {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h4[@class=\"payment__for__id\"]")));
         new cardDetailsInput(readProperty("guestNewCardNumber"));
         driver.findElement(By.id("submit-button")).click();

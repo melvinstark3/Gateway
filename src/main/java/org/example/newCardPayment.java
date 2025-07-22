@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 public class newCardPayment extends browserSetup{
 
-    public newCardPayment(String cardNumber){
+    public newCardPayment(String cardNumber) throws InterruptedException {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h4[@class=\"payment__for__id\"]")));
         new defaultSaveCardCheckbox();
         new cardDetailsInput(cardNumber);

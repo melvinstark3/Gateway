@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 public class secondNewCardPayment extends browserSetup{
 
-    public secondNewCardPayment(String cardNumber, boolean loggedIn) {
+    public secondNewCardPayment(String cardNumber, boolean loggedIn) throws InterruptedException {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h4[@class=\"payment__for__id\"]")));
         String SecondCardPaymentOrderID = driver.findElement(By.xpath("//h4[@class=\"payment__for__id\"]")).getText();
         if (loggedIn) {
