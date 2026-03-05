@@ -49,9 +49,11 @@ public class guestCheckout extends browserSetup {
         Thread.sleep(2000);
         //Home Delivery Address Save Container Check!
         try{
+            wait = new WebDriverWait(driver, 10);
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@data-testid=\"continueAddAddress\"]")));
             wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[@data-testid=\"continueAddAddress\"]"))).click();
         } catch (TimeoutException ignored){}
+        wait = new WebDriverWait(driver, 30);
         // Stale Element Exception if Trying Implicit Wait
         wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("\"//button[@class=\\\"primary_button w-full text-base font-semibold p-3 px-5 mr-3 rounded-2xl border capitalize text-white ng-star-inserted\\\"]\"")));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h5[@data-testid=\"orderTotal\"]")));

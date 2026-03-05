@@ -31,13 +31,13 @@ public class Main extends browserSetup {
             module.defineModule(currentModule,platform);
             automationStatus = "PASS";
         } catch (Exception e) {
-        System.out.println("\nAutomation Stopped Due to an Error");
-        System.out.println("Error Message: " + e.getMessage());
-        automationStatus = "FAIL";
-        screenshotPath = takeScreenshot();
-        e.printStackTrace();
-    } finally {
-        emailReport.send(automationStatus, capturer.getCapturedLogs(),screenshotPath);
-    }
+            System.out.println("\nAutomation Stopped Due to an Error");
+            System.out.println("Error Message: " + e.getMessage());
+            automationStatus = "FAIL";
+            screenshotPath = takeScreenshot();
+            e.printStackTrace();
+        } finally {
+            emailReport.send(automationStatus, capturer.getCapturedLogs(),screenshotPath);
+        }
     }
 }

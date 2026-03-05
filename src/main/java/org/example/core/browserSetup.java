@@ -73,6 +73,7 @@ public class browserSetup {
         prefs.put("credentials_enable_service", false);
         prefs.put("profile.password_manager_enabled", false);
         prefs.put("autofill.credit_card_enabled", false);
+        prefs.put("autofill.profile_enabled", false);
 
         ChromeOptions options = new ChromeOptions();
         options.setExperimentalOption("prefs", prefs);
